@@ -1,0 +1,10 @@
+colorama==0.4.6
+Django==4.2.6
+Pillow==10.1.0
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.3.0
+Scrapy==2.11.0
+elasticsearch_dsl==8.9.0
+psycopg2==2.9.9
+python_dotenv==1.0.0
+drf-yasg==1.21.7
