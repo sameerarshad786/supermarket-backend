@@ -33,6 +33,7 @@ class ProductDocument(Document):
     source = Text()
     url = Text()
     created_at = Date()
+    updated_at = Date()
 
     @classmethod
     def search_product_using_es(
