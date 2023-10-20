@@ -40,6 +40,7 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
+        migrations.RunPython(create_products, delete_products),
         migrations.CreateModel(
             name='Products',
             fields=[
@@ -68,6 +69,5 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
             },
-        ),
-        migrations.RunPython(create_products, reverse_code=delete_products)
+        )
     ]
