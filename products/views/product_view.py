@@ -83,6 +83,11 @@ class ProductRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Products.objects.all()
     lookup_field = "id"
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["product_id"] = self.kwargs.get("id")
+        return context
+
 
 class ProductCreateAPIView(generics.CreateAPIView):
     serializer_class = ProductSerializer
