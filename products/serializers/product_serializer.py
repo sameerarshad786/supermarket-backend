@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
-from ..models.product_model import Product, Type
+from products.models import Product, Type
 from .serializer_fields import DecimalRangeFieldSerializer
+from .review_serializer import ReviewSerializer
 
 
 class TypeSerializer(serializers.ModelSerializer):
@@ -39,6 +40,7 @@ class ProductSerializer(serializers.ModelSerializer):
                 "ratings": serializers.IntegerField(),
                 "original_price": serializers.DecimalField(
                     max_digits=7, decimal_places=2),
+                "reviews": serializers.SerializerMethodField(),
                 "discount": serializers.IntegerField(),
                 "shipping_charges": serializers.DecimalField(
                     max_digits=5, decimal_places=2),
@@ -52,6 +54,13 @@ class ProductSerializer(serializers.ModelSerializer):
                 )
             })
         return fields
+
+    def get_reviews(self, obj):
+        return ReviewSerializer(
+            obj.review_set.all(),
+            context={**self.context},
+            many=True
+        ).data
 
     def get_on_cart(self, obj):
         user = self.context["request"].user

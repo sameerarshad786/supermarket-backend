@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Type, Cart, CartItem
+from .models import Product, Type, Cart, CartItem, Review
 
 
 @admin.register(Product)
@@ -12,10 +12,11 @@ class ProductsAdmin(admin.ModelAdmin):
         "created",
         "updated"
     )
+    search_fields = ("id", )
 
 
 @admin.register(Type)
-class ProductTypesAdmin(admin.ModelAdmin):
+class TypeAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "type",
@@ -24,10 +25,15 @@ class ProductTypesAdmin(admin.ModelAdmin):
 
 
 @admin.register(Cart)
-class ProductTypesAdmin(admin.ModelAdmin):
+class CartAdmin(admin.ModelAdmin):
     list_display = ("id", "user")
 
 
 @admin.register(CartItem)
-class ProductTypesAdmin(admin.ModelAdmin):
+class CartItemAdmin(admin.ModelAdmin):
     list_display = ("id", "product", "quantity")
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ("id", "product_id", "star", "source")

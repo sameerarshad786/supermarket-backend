@@ -30,3 +30,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         for x, y in validated_data.items():
             setattr(instance, x, y)
         return instance
+
+
+class UserSerializer(serializers.Serializer):
+    full_name = serializers.CharField(source="profile.full_name")
+    image = serializers.ImageField(source="profile.image")
+
+    class Meta:
+        fields = ("id", "full_name", "image")
