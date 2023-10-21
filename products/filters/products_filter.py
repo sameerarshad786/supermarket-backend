@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from products.models import Products
+from products.models import Product
 from .filter_fields import DecimalRangeFilter
 
 
@@ -9,7 +9,7 @@ class ProductsFilter(filters.FilterSet):
     price = DecimalRangeFilter()
 
     class Meta:
-        model = Products
+        model = Product
         fields = ("search", "condition", "brand", "source", "price")
 
     def get_search(self, queryset, name, value):

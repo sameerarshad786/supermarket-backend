@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from ..models.product_model import Products, ProductTypes
+from ..models.product_model import Product, Type
 from .serializer_fields import DecimalRangeFieldSerializer
 
 
-class ProductTypeSerializer(serializers.ModelSerializer):
+class TypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductTypes
+        model = Type
         fields = ("id", "type")
 
 
@@ -15,7 +15,7 @@ class ProductSerializer(serializers.ModelSerializer):
     on_cart = serializers.SerializerMethodField()
 
     class Meta:
-        model = Products
+        model = Product
         fields = [
             "id",
             "name",

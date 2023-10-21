@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ProductTypes',
+            name='Type',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RunPython(create_products, delete_products),
         migrations.CreateModel(
-            name='Products',
+            name='Product',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 ('shipping_charges', models.DecimalField(decimal_places=2, default=0, max_digits=5)),
                 ('source', models.CharField(choices=[('not defined', 'Not Defined'), ('amazon', 'Amazon'), ('ebay', 'Ebay'), ('daraz', 'Daraz'), ('ali express', 'Ali Express'), ('ali baba', 'Ali Baba'), ('olx', 'olx')], max_length=11)),
                 ('discount', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(-100), django.core.validators.MaxValueValidator(0)])),
-                ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.producttypes')),
+                ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='type')),
                 ('available', models.BooleanField(default=True)),
                 ('meta', models.JSONField(default=dict)),
             ],

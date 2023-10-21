@@ -10,7 +10,7 @@ from decimal import Decimal
 
 from psycopg2.extras import NumericRange
 
-from products.models import Products, ProductTypes
+from products.models import Product, Type
 
 
 class ProductsItem(scrapy.Item):
@@ -31,7 +31,7 @@ class ProductsItem(scrapy.Item):
 
     def get_brand(self, brand):
         if brand:
-            brand_names = [condition.value for condition in Products.Brand]
+            brand_names = [condition.value for condition in Product.Brand]
             brand = brand.lower().split(" ")[0]
             brand = brand_names.index(brand)
             return brand_names[brand]
@@ -64,8 +64,8 @@ class ProductsItem(scrapy.Item):
 
     async def get_type(self, type):
         try:
-            instance = await ProductTypes.objects.aget(type__icontains=type)
-        except ProductTypes.DoesNotExist:
-            instance = await ProductTypes.objects.acreate(type=type)
+            instance = await Type.objects.aget(type__icontains=type)
+        except Type.DoesNotExist:
+            instance = await Type.objects.acreate(type=type)
 
         return instance

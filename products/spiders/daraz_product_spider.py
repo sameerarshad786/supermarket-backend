@@ -8,7 +8,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.http import Request
 
 from products.items import ProductsItem
-from products.models import Products
+from products.models import Product
 
 
 class DarazProductSpider(scrapy.Spider):
@@ -16,7 +16,7 @@ class DarazProductSpider(scrapy.Spider):
     start_urls = ["https://www.daraz.pk/"]
 
     def parse(self, response, **kwargs):
-        brand_names = [condition.value for condition in Products.Brand]
+        brand_names = [condition.value for condition in Product.Brand]
         categories = LinkExtractor(
             tags="a", attrs="href", restrict_xpaths="//a[@class='catLink']"
         ).extract_links(response)
@@ -88,7 +88,7 @@ class DarazProductSpider(scrapy.Spider):
             item["shipping_charges"] = shipping
             item["ratings"] = item.get_ratings(product.get("shipping_charges"))
             item["discount"] = discount
-            item["condition"] = Products.Condition.NOT_DEFINED
+            item["condition"] = Product.Condition.NOT_DEFINED
             item["type"] = await item.get_type("Electronics")
             yield item
 

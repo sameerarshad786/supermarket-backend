@@ -15,12 +15,12 @@ def scraped_products_media_path(instance, filename):
     return f"scraped-products/{instance.id}/{filename}"
 
 
-class ProductTypes(UUID):
+class Type(UUID):
     type = models.CharField(max_length=150, unique=True)
     valid_name = models.BooleanField(default=False)
 
 
-class Products(UUID):
+class Product(UUID):
     class Condition(models.TextChoices):
         NOT_DEFINED = "not defined", _("Not Defined")
         NEW = "new", _("New")
@@ -66,7 +66,7 @@ class Products(UUID):
     brand = models.CharField(
         max_length=11, choices=Brand.choices, default=Condition.NOT_DEFINED)
     type = models.ForeignKey(
-        ProductTypes, on_delete=models.SET_NULL, blank=True, null=True)
+        Type, on_delete=models.SET_NULL, blank=True, null=True)
     image = models.URLField()
     url = models.URLField(unique=True, max_length=500)
     items_sold = models.PositiveIntegerField(default=0)

@@ -9,7 +9,7 @@ from scrapy.http import Request
 from lxml import html
 
 from products.items import ProductsItem
-from products.models import Products
+from products.models import Product
 
 
 class EbayProductsSpider(scrapy.Spider):
@@ -78,7 +78,7 @@ class EbayProductsSpider(scrapy.Spider):
                 item["shipping_charges"] = item.get_shipping_charges(shipping)
                 item["ratings"] = item.get_ratings(ratings)
                 item["discount"] = item.calc_discount(price, original_price)
-                item["condition"] = Products.Condition.NOT_DEFINED
+                item["condition"] = Product.Condition.NOT_DEFINED
                 item["type"] = await item.get_type("Electronics")
                 yield item
 

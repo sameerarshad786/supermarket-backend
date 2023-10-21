@@ -2,11 +2,11 @@ from django.db import models
 
 from users.models import User
 from utils.mixins import UUID
-from .product_model import Products
+from .product_model import Product
 
 
 class CartItem(UUID):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
 

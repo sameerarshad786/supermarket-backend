@@ -7,7 +7,7 @@ from lxml import html
 from scrapy.http import Request
 
 from products.items import ProductsItem
-from products.models import Products
+from products.models import Product
 
 
 class AmazonProductSpider(scrapy.Spider):
@@ -62,7 +62,7 @@ class AmazonProductSpider(scrapy.Spider):
             item = ProductsItem()
             item["name"] = name
             item["description"] = ""
-            item["brand"] = Products.Brand.NOT_DEFINED
+            item["brand"] = Product.Brand.NOT_DEFINED
             item["url"] = url
             item["price"] = item.get_price(price)
             item["source"] = "amazon"
@@ -70,7 +70,7 @@ class AmazonProductSpider(scrapy.Spider):
             item["shipping_charges"] = shipping_charges
             item["original_price"] = original_price
             item["image"] = image
-            item["condition"] = Products.Condition.NOT_DEFINED
+            item["condition"] = Product.Condition.NOT_DEFINED
             item["ratings"] = item.get_ratings(ratings)
             item["discount"] = item.calc_discount(price, original_price)
             item["type"] = await item.get_type("Electronics")
