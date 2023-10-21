@@ -44,8 +44,25 @@ CART_URL_PATTERNS = [
 ]
 
 
+STORE_URL_PATTERNS = [
+    path("search/", views.SearchStoreAPIView.as_view(), name="search-store"),
+    path("create/", views.StoreCreateAPIView.as_view(), name="create-store"),
+    path(
+        "update/<uuid:pk>/",
+        views.StoreUpdateAPIView.as_view(),
+        name="update-store"
+    ),
+    path(
+        "delete/<uuid:pk>/",
+        views.StoreDeleteAPIView.as_view(),
+        name="delete-store"
+    )
+]
+
+
 urlpatterns = [
     path("type/", include(TYPE_URL_PATTERNS)),
     path("products/", include(PRODUCT_URL_PATTERNS)),
-    path("carts/", include(CART_URL_PATTERNS))
+    path("carts/", include(CART_URL_PATTERNS)),
+    path("store/", include(STORE_URL_PATTERNS))
 ]
