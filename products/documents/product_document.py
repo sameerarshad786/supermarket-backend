@@ -40,7 +40,9 @@ class ProductDocument(Document):
         cls, search, condition, brand, source, price, page, page_size
     ) -> list:
         client = elastic_search_client()
-        es = Search(using=client, index=cls.index).sort({"created_at": "desc", "updated_at": "desc"})
+        es = Search(
+            using=client, index=cls.index
+        ).sort({"created_at": "desc", "updated_at": "desc"})
         should = []
         if search:
             should.extend(
