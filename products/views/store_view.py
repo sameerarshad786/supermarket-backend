@@ -2,6 +2,7 @@ from rest_framework import generics, filters
 
 from products.models import Store
 from products.serializers import StoreSerializer
+from products.permissions import IsObjectPermission
 
 
 class SearchStoreAPIView(generics.ListAPIView):
@@ -20,10 +21,10 @@ class StoreUpdateAPIView(generics.UpdateAPIView):
     serializer_class = StoreSerializer
     queryset = Store.objects.all()
     allowed_methods = ["PATCH"]
+    permission_classes = [IsObjectPermission]
 
 
 class StoreDeleteAPIView(generics.DestroyAPIView):
     serializer_class = StoreSerializer
-
-    def get_queryset(self):
-        return Store.objects.filter(user=self.request.user)
+    queryset = Store.objects.all()
+    permission_classes = [IsObjectPermission]
