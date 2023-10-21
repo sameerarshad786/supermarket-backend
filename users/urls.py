@@ -9,7 +9,11 @@ USER_URL_PATTERNS = [
 ]
 
 PROFILE_URL_PATTERNS = [
-    path("get-or-update/", views.ProfileGetOrUpdateAPIView.as_view(), name="profile")
+    path(
+        "get-or-update/",
+        views.ProfileGetOrUpdateAPIView.as_view(),
+        name="profile"
+    )
 ]
 
 urlpatterns = [
