@@ -4,11 +4,23 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from elasticsearch.exceptions import ConnectionError
 
-from products.models import Product
-from products.serializers import ProductSerializer
+from products.models import Product, Type
+from products.serializers import ProductSerializer, TypeSerializer
 from products.documents import ProductDocument
 from products.pagination import StandardResultsSetPagination
-from products.filters import ProductsFilter
+from products.filters import TypeFilter, ProductsFilter
+
+
+class SearchTypeAPIView(generics.ListAPIView):
+    serializer_class = TypeSerializer
+    queryset = Type.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TypeFilter
+
+
+class TypeCreateAPIView(generics.CreateAPIView):
+    serializer_class = TypeSerializer
+    queryset = Type.objects.all()
 
 
 class ProductsListAPIView(generics.ListAPIView):
@@ -92,9 +104,3 @@ class ProductRetrieveAPIView(generics.RetrieveAPIView):
 class ProductCreateAPIView(generics.CreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-
-
-class ProductUpdateAPIView(generics.UpdateAPIView):
-    serializer_class = ProductSerializer
-    queryset = Product.objects.all()
-    allowed_methods = ["PATCH"]

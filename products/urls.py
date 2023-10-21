@@ -3,6 +3,12 @@ from django.urls import path, include
 from . import views
 
 
+TYPE_URL_PATTERNS = [
+    path("search/", views.SearchTypeAPIView.as_view(), name="search-type"),
+    path("create/", views.TypeCreateAPIView.as_view(), name="create-type")
+]
+
+
 PRODUCT_URL_PATTERNS = [
     path("list/", views.ProductsListAPIView.as_view(), name="products-list"),
     path(
@@ -14,11 +20,6 @@ PRODUCT_URL_PATTERNS = [
         "create/",
         views.ProductCreateAPIView.as_view(),
         name="create-product"
-    ),
-    path(
-        "update/<uuid:id>/",
-        views.ProductUpdateAPIView.as_view(),
-        name="update-product"
     )
 ]
 
@@ -44,6 +45,7 @@ CART_URL_PATTERNS = [
 
 
 urlpatterns = [
+    path("type/", include(TYPE_URL_PATTERNS)),
     path("products/", include(PRODUCT_URL_PATTERNS)),
     path("carts/", include(CART_URL_PATTERNS))
 ]

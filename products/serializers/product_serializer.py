@@ -10,6 +10,10 @@ class TypeSerializer(serializers.ModelSerializer):
         model = Type
         fields = ("id", "type")
 
+    def create(self, validated_data):
+        type = validated_data.get("type").capitalize()
+        return Type.objects.create(type=type)
+
 
 class ProductSerializer(serializers.ModelSerializer):
     price = DecimalRangeFieldSerializer()
