@@ -8,7 +8,7 @@ from scrapy import signals
 # useful for handling different item types with a single interface
 # from itemadapter import is_item, ItemAdapter
 
-from products.models import Products
+from products.models import Product
 
 
 class ProductsSpiderMiddleware:
@@ -52,11 +52,11 @@ class ProductsSpiderMiddleware:
 
         # Must return only requests (not items).
         for r in start_requests:
-            if spider.name == Products.Source.EBAY:
+            if spider.name == Product.Source.EBAY:
                 r.headers["Referer"] = "https://www.google.com/search?q=ebay&oq=ebay&aqs=chrome.0.0i271j46i67i131i199i433i465i650j35i39j69i60l5.1394j0j7&sourceid=chrome&ie=UTF-8" # noqa
-            elif spider.name == Products.Source.DARAZ:
+            elif spider.name == Product.Source.DARAZ:
                 r.headers["Referer"] = "https://www.google.com/search?q=daraz&oq=daraz&aqs=chrome.0.0i271j46i131i199i433i465i512j35i39j0i131i433i512l2j69i60l3.2267j0j7&sourceid=chrome&ie=UTF-8" # noqa
-            elif spider.name == Products.Source.AMAZON:
+            elif spider.name == Product.Source.AMAZON:
                 r.headers["Referer"] = "https://www.google.com/search?q=amazon&oq=amazon&gs_lcrp=EgZjaHJvbWUqBwgAEAAYjwIyBwgAEAAYjwIyEwgBEC4YgwEYxwEYsQMY0QMYgAQyCwgCEEUYJxg7GIoFMgYIAxBFGDsyBggEEEUYPDIGCAUQRRg8MgYIBhBFGDwyBggHEEUYPNIBCDI3MzFqMGo0qAIAsAIA&sourceid=chrome&ie=UTF-8" # noqa
             yield r
 

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from elasticsearch.exceptions import ConnectionError
 
-from products.models import Products
+from products.models import Product
 from products.serializers import ProductSerializer
 from products.documents import ProductDocument
 from products.pagination import StandardResultsSetPagination
@@ -16,7 +16,7 @@ class ProductsListAPIView(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductsFilter
-    queryset = Products.objects.all().order_by("-created_at", "-updated_at")
+    queryset = Product.objects.all().order_by("-created_at", "-updated_at")
 
     def list(self, request, *args, **kwargs):
         search = self.request.GET.get("search")
@@ -80,7 +80,7 @@ class ProductsListAPIView(generics.ListAPIView):
 
 class ProductRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
-    queryset = Products.objects.all()
+    queryset = Product.objects.all()
     lookup_field = "id"
 
     def get_serializer_context(self):
@@ -91,10 +91,10 @@ class ProductRetrieveAPIView(generics.RetrieveAPIView):
 
 class ProductCreateAPIView(generics.CreateAPIView):
     serializer_class = ProductSerializer
-    queryset = Products.objects.all()
+    queryset = Product.objects.all()
 
 
 class ProductUpdateAPIView(generics.UpdateAPIView):
     serializer_class = ProductSerializer
-    queryset = Products.objects.all()
+    queryset = Product.objects.all()
     allowed_methods = ["PATCH"]

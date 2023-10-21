@@ -10,7 +10,7 @@ import colorama
 
 from dotenv import load_dotenv
 
-from products.models import Products
+from products.models import Product
 
 load_dotenv()
 
@@ -19,9 +19,9 @@ class ProductsPipeline:
 
     async def process_item(self, item, spider):
         try:
-            product = await Products.objects.aget(url=item.get("url"))
+            product = await Product.objects.aget(url=item.get("url"))
             print(item, colorama.Fore.YELLOW)
-        except Products.DoesNotExist:
-            product = Products(**item)
+        except Product.DoesNotExist:
+            product = Product(**item)
             print(item, colorama.Fore.GREEN)
         await product.asave()
