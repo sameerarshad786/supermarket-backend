@@ -9,6 +9,7 @@ from products.serializers import ProductSerializer, TypeSerializer
 from products.documents import ProductDocument
 from products.pagination import StandardResultsSetPagination
 from products.filters import TypeFilter, ProductsFilter
+from products.service import filtered_paginated_response
 
 
 class SearchTypeAPIView(generics.ListAPIView):
@@ -80,12 +81,7 @@ class ProductsListAPIView(generics.ListAPIView):
                 "results": serializer.data
             }
         except ConnectionError:
-            queryset = self.filter_queryset(self.queryset)
-            page = self.paginate_queryset(queryset)
-            serializer = self.serializer_class(
-                page, context={"request": request}, many=True
-            )
-            data = self.get_paginated_response(serializer.data).data
+            data = filtered_paginated_response(self, self.queryset)
 
         return Response(data, status=status.HTTP_200_OK)
 

@@ -26,6 +26,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "name",
             "image",
             "price",
+            "ratings",
             "brand",
             "condition",
             "discount",
@@ -41,14 +42,13 @@ class ProductSerializer(serializers.ModelSerializer):
             fields.update({
                 "description": serializers.CharField(),
                 "items_sold": serializers.IntegerField(),
-                "ratings": serializers.IntegerField(),
                 "original_price": serializers.DecimalField(
                     max_digits=7, decimal_places=2),
-                "reviews": serializers.SerializerMethodField(),
-                "discount": serializers.IntegerField(),
+                "store": serializers.SerializerMethodField(),
                 "shipping_charges": serializers.DecimalField(
                     max_digits=5, decimal_places=2),
-                "meta": serializers.JSONField()
+                "reviews": serializers.SerializerMethodField(),
+                "meta": serializers.JSONField(),
             })
         else:
             fields.update({
@@ -64,6 +64,13 @@ class ProductSerializer(serializers.ModelSerializer):
             obj.review_set.all(),
             context={**self.context},
             many=True
+        ).data
+
+    def get_store(self, obj):
+        from products.serializers import StoreSerializer
+        return StoreSerializer(
+            obj.store_set.get(),
+            context={**self.context}
         ).data
 
     def get_on_cart(self, obj):

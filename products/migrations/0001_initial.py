@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('image', models.URLField()),
                 ('url', models.URLField(max_length=500, unique=True)),
                 ('items_sold', models.PositiveIntegerField(default=0)),
-                ('ratings', models.PositiveIntegerField(default=0)),
+                ('ratings', models.DecimalField(decimal_places=1, default=0, max_digits=2)),
                 ('condition', models.CharField(choices=[('not defined', 'Not Defined'), ('new', 'New'), ('used', 'Used'), ('open box', 'Open Box'), ('refurbished', 'Refurbished'), ('dead', 'Dead')], default='not defined', max_length=11)),
                 ('original_price', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
                 ('price', django.contrib.postgres.fields.ranges.DecimalRangeField(default=(Decimal('0.00'), Decimal('0.00')))),

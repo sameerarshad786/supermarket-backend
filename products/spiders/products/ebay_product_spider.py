@@ -13,7 +13,7 @@ from products.models import Product
 
 
 class EbayProductsSpider(scrapy.Spider):
-    name = "ebay"
+    name = "product"
     start_urls = ["https://www.ebay.com/"]
 
     def parse(self, response, **kwargs):

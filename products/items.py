@@ -28,6 +28,8 @@ class ProductsItem(scrapy.Item):
     shipping_charges = scrapy.Field()
     source = scrapy.Field()
     discount = scrapy.Field()
+    available = scrapy.Field()
+    meta = scrapy.Field()
 
     def get_brand(self, brand):
         if brand:
@@ -69,3 +71,24 @@ class ProductsItem(scrapy.Item):
             instance = await Type.objects.acreate(type=type)
 
         return instance
+
+
+class StoreItem(scrapy.Item):
+    name = scrapy.Field()
+    url = scrapy.Field()
+    main_photo = scrapy.Field()
+    type = scrapy.Field()
+
+
+class ReviewItem(scrapy.Item):
+    name = scrapy.Field()
+    rating = scrapy.Field()
+    review = scrapy.Field()
+    source = scrapy.Field()
+    images = scrapy.Field()
+
+
+class ProductDetailItem(scrapy.Item):
+    store = scrapy.Field(serializer=StoreItem)
+    review = scrapy.Field(serializer=ReviewItem)
+    product = scrapy.Field(serializer=ProductsItem)

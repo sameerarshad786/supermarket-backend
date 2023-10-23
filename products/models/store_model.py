@@ -30,3 +30,4 @@ class Store(UUID):
     type = models.ForeignKey(
         Type, on_delete=models.SET_NULL, blank=True, null=True)
     product = models.ManyToManyField(Product)
+    url = models.URLField(unique=True)

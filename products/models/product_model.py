@@ -70,7 +70,7 @@ class Product(UUID):
     image = models.URLField()
     url = models.URLField(unique=True, max_length=500)
     items_sold = models.PositiveIntegerField(default=0)
-    ratings = models.PositiveIntegerField(default=0)
+    ratings = models.DecimalField(default=0, max_digits=2, decimal_places=1)
     condition = models.CharField(
         max_length=11,
         choices=Condition.choices,
@@ -109,6 +109,7 @@ class Product(UUID):
             brand=self.brand,
             condition=self.condition,
             ratings=self.ratings,
+            discount=self.discount,
             source=self.source,
             url=self.url,
             created_at=self.created_at.date(),
