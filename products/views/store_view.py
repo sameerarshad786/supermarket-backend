@@ -2,12 +2,14 @@ from rest_framework import generics, filters
 
 from products.models import Store
 from products.serializers import StoreSerializer
+from products.pagination import StandardResultsSetPagination
 from products.permissions import IsObjectPermission
 
 
 class SearchStoreAPIView(generics.ListAPIView):
     serializer_class = StoreSerializer
-    queryset = Store.objects.all()
+    queryset = Store.objects.all().order_by("-created_at")
+    pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
 

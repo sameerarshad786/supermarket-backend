@@ -29,6 +29,7 @@ class Migration(migrations.Migration):
                 ('product', models.ManyToManyField(to='products.product')),
                 ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.type')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                ('url', models.URLField(unique=True))
             ],
             options={
                 'abstract': False,

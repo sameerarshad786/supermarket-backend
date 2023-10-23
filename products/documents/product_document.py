@@ -1,7 +1,7 @@
 
 from django.conf import settings
 
-from elasticsearch_dsl import Text, Float, Search, Q, Date
+from elasticsearch_dsl import Text, Search, Q, Date, Keyword
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.document import Document
 
@@ -27,10 +27,9 @@ class ProductDocument(Document):
     name = Text()
     image = Text()
     price = RangeField()
-    brand = Text()
-    condition = Text()
-    ratings = Float()
-    source = Text()
+    brand = Keyword()
+    condition = Keyword()
+    source = Keyword()
     url = Text()
     created_at = Date()
     updated_at = Date()
@@ -49,11 +48,11 @@ class ProductDocument(Document):
                 [Q("match", name=search), Q("match", description=search)]
             )
         if condition:
-            should.append(Q("match", condition=condition))
+            should.append(Q("term", condition=condition))
         if brand:
-            should.append(Q("match", brand=brand))
+            should.append(Q("term", brand=brand))
         if source:
-            should.append(Q("match", source=source))
+            should.append(Q("term", source=source))
         es = es.query("bool", should=should)
         if price:
             if "," in price:
@@ -74,7 +73,7 @@ class ProductDocument(Document):
                         price=price_filter
                     )
                 ]
-            )
+            ).sort({"price": "asc"})
 
         es = es.extra(from_=page, size=page_size)
 
@@ -92,9 +91,10 @@ class ProductDocument(Document):
             "mappings": {
                 "properties": {
                     "name": {"type": "text"},
-                    "description": {"type": "text"},
                     "price": {"type": "float_range"},
-                    "condition": {"type": "text"},
+                    "condition": {"type": "keyword"},
+                    "source": {"type": "keyword"},
+                    "brand": {"type": "keyword"},
                     "created_at": {"type": "date"},
                     "updated_at": {"type": "date"}
                 }

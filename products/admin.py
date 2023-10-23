@@ -36,9 +36,9 @@ class CartItemAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ("id", "product_id", "star", "source")
+    list_display = ("id", "product_id", "rating", "source")
 
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "user")
+    list_display = ("id", "name", "user", "created", "updated")

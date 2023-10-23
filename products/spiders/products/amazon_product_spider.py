@@ -11,7 +11,7 @@ from products.models import Product
 
 
 class AmazonProductSpider(scrapy.Spider):
-    name = "amazon"
+    name = "product"
     domain = "https://www.amazon.com"
     start_urls = [f"{domain}/"]
 

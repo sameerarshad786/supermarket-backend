@@ -14,10 +14,10 @@ class StoreSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "type",
+            "url",
             "main_photo",
             "cover_photo",
-            "user",
-            "product"
+            "user"
         )
         extra_kwargs = {
             "product": {"required": False}

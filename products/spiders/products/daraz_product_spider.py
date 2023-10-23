@@ -12,7 +12,7 @@ from products.models import Product
 
 
 class DarazProductSpider(scrapy.Spider):
-    name = "daraz"
+    name = "product"
     start_urls = ["https://www.daraz.pk/"]
 
     def parse(self, response, **kwargs):
