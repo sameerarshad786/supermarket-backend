@@ -111,8 +111,7 @@ class AmazonProductSpider(scrapy.Spider):
             price_list = product.xpath(".//span[@class='a-offscreen']/text()")
             price_exception = [price.extract() for price in price_list]
             valid_price =  list(map(lambda x: re.sub(r"[^\d.]", "", x), price_exception)) # noqa
-
-        return valid_price
+        return sorted(valid_price)
 
     def parse_original_price(self, product, price):
         original_price = product.xpath(
