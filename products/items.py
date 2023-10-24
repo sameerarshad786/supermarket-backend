@@ -43,6 +43,8 @@ class ProductsItem(scrapy.Item):
     def get_price(self, price: list):
         if len(price) == 1:
             return NumericRange(Decimal(price[0]))
+        elif not price:
+            return None
         else:
             return NumericRange(Decimal(price[0]), Decimal(price[1]))
 

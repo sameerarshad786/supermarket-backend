@@ -67,11 +67,13 @@ class ProductSerializer(serializers.ModelSerializer):
         ).data
 
     def get_store(self, obj):
-        from products.serializers import StoreSerializer
-        return StoreSerializer(
-            obj.store_set.get(),
-            context={**self.context}
-        ).data
+        if obj.store_set.exists():
+            from products.serializers import StoreSerializer
+            return StoreSerializer(
+                obj.store_set.get(),
+                context={**self.context},
+            ).data
+        return {}
 
     def get_on_cart(self, obj):
         user = self.context["request"].user
