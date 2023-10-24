@@ -12,4 +12,4 @@ class CartItem(UUID):
 
 class Cart(UUID):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    cart_item = models.ManyToManyField(CartItem)
+    cart_item = models.ManyToManyField(CartItem, blank=True)
