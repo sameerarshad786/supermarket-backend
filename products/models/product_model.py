@@ -5,9 +5,6 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import DecimalRangeField
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Search, Q
-
 from utils.mixins import UUID
 
 
@@ -119,15 +116,8 @@ class Product(UUID):
         return obj.to_dict(include_meta=True)
 
     def delete_product_from_elasticsearch_db(self):
-        client = Elasticsearch(
-            hosts="https://localhost:9200",
-            ca_certs=False,
-            verify_certs=False,
-            http_auth=("elastic", "0HKiYRk5XwrfL9F+*hts")
+        from products.documents.product_document import ProductDocument
+        ProductDocument().delete(
+            id=self.id,
+            index="products"
         )
-        index_name = 'products'
-
-        es = Search(using=client, index=index_name)
-        query = Q("match", id=self.id)
-        es = es.query(query)
-        es.delete()
