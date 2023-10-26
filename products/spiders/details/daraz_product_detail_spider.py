@@ -14,9 +14,15 @@ class DarazProductDetail(scrapy.Spider):
     name = "product-details"
     start_urls = ["https://www.daraz.com"]
 
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'products.pipelines.ProductDetailPipline': 200
+        }
+    }
+
     async def parse(self, response, **kwargs):
-        dataz_products = Product.objects.filter(source=Product.Source.DARAZ)
-        async for product in dataz_products:
+        daraz_products = Product.objects.filter(source=Product.Source.DARAZ)
+        async for product in daraz_products:
             yield Request(
                 url=product.url,
                 callback=self.product_details,
@@ -52,11 +58,13 @@ class DarazProductDetail(scrapy.Spider):
                 store = dict()
                 store["name"] = store_data["seller"]["name"]
                 store["url"] = "https:{}".format(store_data["seller"]["url"])
-                store["type"] = instance.type
+                store["type_id"] = instance.type_id
 
-                review = dict()
                 reviews = data["data"]["root"]["fields"]["review"]["reviews"]
+
+                review_list = []
                 for value in reviews:
+                    review = dict()
                     review["name"] = value["reviewer"]
                     review["source"] = Review.Sources.SCRAPED
                     review["review"] = value.get("reviewContent", "")
@@ -66,9 +74,10 @@ class DarazProductDetail(scrapy.Spider):
                         review["images"] = images
                     except KeyError:
                         pass
+                    review_list.append(review)
 
                 product_detail = ProductDetailItem()
                 product_detail["store"] = store
                 product_detail["product"] = instance
-                product_detail["review"] = review
+                product_detail["reviews"] = review_list
                 yield product_detail

@@ -15,6 +15,12 @@ class AmazonProductSpider(scrapy.Spider):
     domain = "https://www.amazon.com"
     start_urls = [f"{domain}/"]
 
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'products.pipelines.ProductsPipeline': 100
+        }
+    }
+
     def parse(self, response, **kwargs):
         electronics_section = response.xpath(
             "//div/div[contains(div/h2, 'Electronics')]/a"
