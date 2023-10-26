@@ -15,6 +15,12 @@ class DarazProductSpider(scrapy.Spider):
     name = "product"
     start_urls = ["https://www.daraz.pk/"]
 
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'products.pipelines.ProductsPipeline': 100
+        }
+    }
+
     def parse(self, response, **kwargs):
         brand_names = [condition.value for condition in Product.Brand]
         categories = LinkExtractor(

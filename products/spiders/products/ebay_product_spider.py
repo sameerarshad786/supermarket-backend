@@ -16,6 +16,12 @@ class EbayProductsSpider(scrapy.Spider):
     name = "product"
     start_urls = ["https://www.ebay.com/"]
 
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'products.pipelines.ProductsPipeline': 100
+        }
+    }
+
     def parse(self, response, **kwargs):
         electronic_section = LinkExtractor(
             tags="a", attrs="href", restrict_text="Electronics"

@@ -60,9 +60,15 @@ STORE_URL_PATTERNS = [
 ]
 
 
+REVIEW_URL_PATTERNS = [
+    path("create/", views.ReviewCreateAPIView.as_view(), name="create-review")
+]
+
+
 urlpatterns = [
     path("type/", include(TYPE_URL_PATTERNS)),
     path("products/", include(PRODUCT_URL_PATTERNS)),
     path("carts/", include(CART_URL_PATTERNS)),
-    path("store/", include(STORE_URL_PATTERNS))
+    path("store/", include(STORE_URL_PATTERNS)),
+    # path("review/<uuid:product_id>/", include(REVIEW_URL_PATTERNS))
 ]

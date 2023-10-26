@@ -79,7 +79,7 @@ class StoreItem(scrapy.Item):
     name = scrapy.Field()
     url = scrapy.Field()
     main_photo = scrapy.Field()
-    type = scrapy.Field()
+    type_id = scrapy.Field()
 
 
 class ReviewItem(scrapy.Item):
@@ -92,5 +92,5 @@ class ReviewItem(scrapy.Item):
 
 class ProductDetailItem(scrapy.Item):
     store = scrapy.Field(serializer=StoreItem)
-    review = scrapy.Field(serializer=ReviewItem)
+    reviews = scrapy.Field(serializer=list)
     product = scrapy.Field(serializer=ProductsItem)
