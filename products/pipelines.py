@@ -28,28 +28,30 @@ class ProductDetailPipline:
     async def process_item(self, item, spider):
         if spider.name == "product-details":
             store = item["store"]
-            review = item["review"]
+            reviews = item["reviews"]
             product = item["product"]
 
-            try:
-                store_instance = await Store.objects.aget(url=store["url"])
-                # print(store, colorama.Fore.YELLOW)
-            except Store.DoesNotExist:
-                store_instance = Store(**store)
-                # print(store, colorama.Fore.GREEN)
-
-            await store_instance.asave()
-            await store_instance.product.aadd(product.id)
-
-            if review:
+            if store:
                 try:
-                    review_instance = await Review.objects.aget(
-                        name=review["name"],
-                        product=product
-                    )
-                    # print(review, colorama.Fore.YELLOW)
-                except Review.DoesNotExist:
-                    review_instance = Review(**review, product=product)
-                    # print(review, colorama.Fore.GREEN)
+                    store_instance = await Store.objects.aget(url=store["url"])
+                    print(store, colorama.Fore.YELLOW)
+                except Store.DoesNotExist:
+                    store_instance = Store(**store)
+                    print(store, colorama.Fore.GREEN)
 
-                await review_instance.asave()
+                await store_instance.asave()
+                await store_instance.product.aadd(product.id)
+
+            if reviews:
+                for review in reviews:
+                    try:
+                        review_instance = await Review.objects.aget(
+                            name=review["name"],
+                            product=product
+                        )
+                        print(review, colorama.Fore.YELLOW)
+                    except Review.DoesNotExist:
+                        review_instance = Review(**review, product=product)
+                        print(review, colorama.Fore.GREEN)
+
+                    await review_instance.asave()

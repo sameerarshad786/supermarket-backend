@@ -177,3 +177,5 @@ SWAGGER_SETTINGS = {
         }
     },
 }
+
+FRONTEND_URL = os.getenv("FRONTEND_URL")
