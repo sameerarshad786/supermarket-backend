@@ -13,9 +13,3 @@ def elastic_search_client():
             settings.ELASTIC_SEARCH_PASSWORD
         )
     )
-
-
-def union(lst1, lst2):
-    # https://www.geeksforgeeks.org/python-union-two-lists/
-    final_list = list(set(lst1) | set(lst2))
-    return final_list

@@ -1,8 +1,5 @@
-from django.conf import settings
-
-from scrapyd_api import ScrapydAPI
-
 from products.models import Product
+from products.spiders import DarazProductDetailSpider
 
 
 def filtered_paginated_response(self, queryset):
@@ -15,16 +12,11 @@ def filtered_paginated_response(self, queryset):
     return data
 
 
-def reload_product(product: Product):
-    _scrapyd = ScrapydAPI(settings.SCRAPYD_HOST)
-    kwargs = {
-        "product": product,
-        "product_id": product.id,
-        "url": product.url
-    }
-    job = _scrapyd.schedule(
-        project="products",
-        spider="product-details",
-        **kwargs
-    )
-    return job
+async def reload_product(product: Product):
+    await DarazProductDetailSpider(product).start_request(product.url)
+
+
+def union(lst1, lst2):
+    # https://www.geeksforgeeks.org/python-union-two-lists/
+    final_list = list(set(lst1) | set(lst2))
+    return final_list
