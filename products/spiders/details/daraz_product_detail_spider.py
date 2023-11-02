@@ -9,7 +9,7 @@ from lxml import html
 from products.items import ProductDetailItem
 from products.models import Review
 from products.pipelines import ProductDetailPipline
-from products.service import union
+# from products.service import union
 
 
 class DarazProductDetailSpider:
@@ -45,6 +45,7 @@ class DarazProductDetailSpider:
                     ratings = data["review"]["ratings"]["average"]
                     instance.ratings = Decimal(ratings)
                     instance.html = html_desc
+                    from products.service import union
                     instance.images = union(instance.images, images)
                     instance.description = product["highlights"]
 
