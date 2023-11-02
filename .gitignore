@@ -5,11 +5,3 @@
 __pycache__
 
 media
-
-# scraper
-twistd.pid
-build
-dbs
-eggs
-project.egg-info
-logs
