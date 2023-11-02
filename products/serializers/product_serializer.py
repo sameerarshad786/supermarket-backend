@@ -24,13 +24,13 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "image",
+            "images",
             "price",
             "ratings",
             "brand",
             "condition",
             "discount",
-            "source",
+            "by",
             "url",
             "on_cart"
         ]
@@ -44,11 +44,16 @@ class ProductSerializer(serializers.ModelSerializer):
                 "items_sold": serializers.IntegerField(),
                 "original_price": serializers.DecimalField(
                     max_digits=7, decimal_places=2),
+                "html": serializers.CharField(),
                 "store": serializers.SerializerMethodField(),
                 "shipping_charges": serializers.DecimalField(
                     max_digits=5, decimal_places=2),
                 "reviews": serializers.SerializerMethodField(),
                 "meta": serializers.JSONField(),
+                "reload": serializers.HyperlinkedIdentityField(
+                    view_name="reload",
+                    lookup_field="id"
+                )
             })
         else:
             fields.update({

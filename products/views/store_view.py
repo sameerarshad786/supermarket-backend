@@ -11,7 +11,12 @@ class SearchStoreAPIView(generics.ListAPIView):
     queryset = Store.objects.all().order_by("-created_at")
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
-    search_fields = ["name"]
+    search_fields = ["id", "name"]
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["show_products"] = True
+        return context
 
 
 class StoreCreateAPIView(generics.CreateAPIView):

@@ -7,8 +7,8 @@ class ProductsAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "get_name",
+        "by",
         "brand",
-        "source",
         "created",
         "updated"
     )
@@ -36,7 +36,7 @@ class CartItemAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ("id", "product_id", "rating", "source")
+    list_display = ("id", "product_id", "rating")
 
 
 @admin.register(Store)

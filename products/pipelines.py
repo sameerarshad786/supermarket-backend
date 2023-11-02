@@ -13,7 +13,10 @@ from products.models import Product, Store, Review
 class ProductsPipeline:
 
     async def process_item(self, item, spider):
-        if spider.name == "product":
+        if (
+            spider.name == Product.By.DARAZ or
+            spider.name == Product.By.EBAY
+        ):
             try:
                 product = await Product.objects.aget(url=item.get("url"))
                 print(item, colorama.Fore.YELLOW)
@@ -27,17 +30,18 @@ class ProductDetailPipline:
 
     async def process_item(self, item, spider):
         if spider.name == "product-details":
-            store = item["store"]
-            reviews = item["reviews"]
-            product = item["product"]
+            store = item.get("store")
+            reviews = item.get("reviews")
+            product = item.get("product")
 
             if store:
+                store_url = store.pop("url").split("?")[0]
                 try:
-                    store_instance = await Store.objects.aget(url=store["url"])
-                    print(store, colorama.Fore.YELLOW)
+                    store_instance = await Store.objects.aget(url=store_url)
+                    # print(store, colorama.Fore.YELLOW)
                 except Store.DoesNotExist:
-                    store_instance = Store(**store)
-                    print(store, colorama.Fore.GREEN)
+                    store_instance = Store(**store, url=store_url)
+                    # print(store, colorama.Fore.GREEN)
 
                 await store_instance.asave()
                 await store_instance.product.aadd(product.id)
@@ -49,9 +53,9 @@ class ProductDetailPipline:
                             name=review["name"],
                             product=product
                         )
-                        print(review, colorama.Fore.YELLOW)
+                        # print(review, colorama.Fore.YELLOW)
                     except Review.DoesNotExist:
                         review_instance = Review(**review, product=product)
-                        print(review, colorama.Fore.GREEN)
+                        # print(review, colorama.Fore.GREEN)
 
                     await review_instance.asave()

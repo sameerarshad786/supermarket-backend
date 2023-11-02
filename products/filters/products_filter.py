@@ -18,7 +18,7 @@ class ProductsFilter(filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ("search", "condition", "brand", "source", "price")
+        fields = ("search", "condition", "brand", "by", "price")
 
     def get_search(self, queryset, name, value):
         queryset = queryset.filter(

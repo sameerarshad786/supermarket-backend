@@ -8,6 +8,8 @@ from scrapy import signals
 # useful for handling different item types with a single interface
 # from itemadapter import is_item, ItemAdapter
 
+from scrapy.utils.project import get_project_settings
+
 from products.models import Product
 
 
@@ -30,12 +32,12 @@ class ProductsSpiderMiddleware:
         # Should return None or raise an exception.
         return None
 
-    def process_spider_output(self, response, result, spider):
+    async def process_spider_output(self, response, result, spider):
         # Called with the results returned from the Spider, after
         # it has processed the response.
 
         # Must return an iterable of Request, or item objects.
-        for i in result:
+        async for i in result:
             yield i
 
     def process_spider_exception(self, response, exception, spider):
@@ -46,18 +48,19 @@ class ProductsSpiderMiddleware:
         pass
 
     def process_start_requests(self, start_requests, spider):
+        settings = get_project_settings()
         # Called with the start requests of the spider, and works
         # similarly to the process_spider_output() method, except
         # that it doesn’t have a response associated.
 
         # Must return only requests (not items).
         for r in start_requests:
-            if spider.name == Product.Source.EBAY:
-                r.headers["Referer"] = "https://www.google.com/search?q=ebay&oq=ebay&aqs=chrome.0.0i271j46i67i131i199i433i465i650j35i39j69i60l5.1394j0j7&sourceid=chrome&ie=UTF-8" # noqa
-            elif spider.name == Product.Source.DARAZ:
-                r.headers["Referer"] = "https://www.google.com/search?q=daraz&oq=daraz&aqs=chrome.0.0i271j46i131i199i433i465i512j35i39j0i131i433i512l2j69i60l3.2267j0j7&sourceid=chrome&ie=UTF-8" # noqa
-            elif spider.name == Product.Source.AMAZON:
-                r.headers["Referer"] = "https://www.google.com/search?q=amazon&oq=amazon&gs_lcrp=EgZjaHJvbWUqBwgAEAAYjwIyBwgAEAAYjwIyEwgBEC4YgwEYxwEYsQMY0QMYgAQyCwgCEEUYJxg7GIoFMgYIAxBFGDsyBggEEEUYPDIGCAUQRRg8MgYIBhBFGDwyBggHEEUYPNIBCDI3MzFqMGo0qAIAsAIA&sourceid=chrome&ie=UTF-8" # noqa
+            if spider.name == Product.By.EBAY:
+                r.headers["Referer"] = settings.get("EBAY_REFERER")
+            elif spider.name == Product.By.DARAZ:
+                r.headers["Referer"] = settings.get("DARAZ_REFERER")
+            elif spider.name == Product.By.AMAZON:
+                r.headers["Referer"] = settings.get("AMAZON_REFERER")
             yield r
 
     def spider_opened(self, spider):

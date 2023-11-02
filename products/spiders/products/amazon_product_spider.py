@@ -11,15 +11,19 @@ from products.models import Product
 
 
 class AmazonProductSpider(scrapy.Spider):
-    name = "product"
+    name = Product.By.AMAZON
     domain = "https://www.amazon.com"
-    start_urls = [f"{domain}/"]
 
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'products.pipelines.ProductsPipeline': 100
+        "ITEM_PIPELINES": {
+            "products.pipelines.ProductsPipeline": 100
         }
     }
+
+    def start_requests(self):
+        yield Request(
+            url=self.domain, meta={"playwright": True}
+        )
 
     def parse(self, response, **kwargs):
         electronics_section = response.xpath(
@@ -71,11 +75,11 @@ class AmazonProductSpider(scrapy.Spider):
             item["brand"] = Product.Brand.NOT_DEFINED
             item["url"] = url
             item["price"] = item.get_price(price)
-            item["source"] = "amazon"
+            item["by"] = Product.By.AMAZON
             item["items_sold"] = items_sold
             item["shipping_charges"] = shipping_charges
             item["original_price"] = original_price
-            item["image"] = image
+            item["images"] = [image]
             item["condition"] = Product.Condition.NOT_DEFINED
             item["ratings"] = item.get_ratings(ratings)
             item["discount"] = item.calc_discount(price, original_price)
