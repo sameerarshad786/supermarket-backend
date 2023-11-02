@@ -12,3 +12,4 @@ drf-yasg==1.21.7
 scrapyd==1.4.3
 scrapyd_client==1.2.3
 playwright==1.39.0
+aiohttp==3.8.6
