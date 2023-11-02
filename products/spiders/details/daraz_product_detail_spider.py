@@ -1,40 +1,32 @@
 import re
 import json
-import scrapy
+import aiohttp
 
 from decimal import Decimal
-from scrapy.http import Request
+
+from lxml import html
 
 from products.items import ProductDetailItem
-from products.models import Product, Review
-from products.utils import union
+from products.models import Review
+from products.pipelines import ProductDetailPipline
+from products.service import union
 
 
-class DarazProductDetail(scrapy.Spider):
+class DarazProductDetailSpider:
     name = "product-details"
 
-    custom_settings = {
-        'ITEM_PIPELINES': {
-            'products.pipelines.ProductDetailPipline': 200
-        }
-    }
+    def __init__(self, product, **kwargs):
+        self.product = product
 
-    def __init__(self, product, product_id, url, **kwargs):
-        self.product = Product(product)
-        self.product_id = product_id
-        self.url = url
-
-    def start_requests(self, **kwargs):
-        yield Request(
-            url=self.url,
-            callback=self.parse,
-            cb_kwargs=kwargs
-        )
+    async def start_request(self, url, **kwargs):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                return await self.parse(response)
 
     async def parse(self, response, **kwargs):
-        script_content = response.css('script::text').getall()
-
-        instance = await Product.objects.aget(id=self.product_id)
+        page = html.fromstring(await response.text(), "lxml")
+        script_content = page.xpath("//script/text()")
+        instance = self.product
 
         for line in script_content:
             match = re.search(r'app\.run\((.*?)\);', line)
@@ -89,7 +81,7 @@ class DarazProductDetail(scrapy.Spider):
 
                     product_detail["store"] = store
                     product_detail["product"] = instance
-                    yield product_detail
+                    await ProductDetailPipline.process_item(self, product_detail, self.name)
 
                 except json.decoder.JSONDecodeError as e:
                     print(e)

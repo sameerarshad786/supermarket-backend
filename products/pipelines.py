@@ -29,7 +29,7 @@ class ProductsPipeline:
 class ProductDetailPipline:
 
     async def process_item(self, item, spider):
-        if spider.name == "product-details":
+        if spider == "product-details":
             store = item.get("store")
             reviews = item.get("reviews")
             product = item.get("product")

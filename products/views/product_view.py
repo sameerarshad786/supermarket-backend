@@ -1,15 +1,13 @@
-from django.conf import settings
+import asyncio
 
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 
 from django_filters.rest_framework import DjangoFilterBackend
-from elasticsearch.exceptions import ConnectionError
-from scrapyd_api import ScrapydAPI
 
 from products.models import Product, Type
 from products.serializers import ProductSerializer, TypeSerializer
-from products.documents import ProductDocument
+# from products.documents import ProductDocument
 from products.pagination import StandardResultsSetPagination
 from products.filters import TypeFilter, ProductsFilter
 from products.service import filtered_paginated_response, reload_product
@@ -112,33 +110,14 @@ class ProductReloadAPIView(views.APIView):
         return Product.objects.get(id=self.kwargs.get("id"))
 
     def put(self, request, *args, **kwargs):
-        try:
-            job = reload_product(self.get_object())
-            _scrapyd = ScrapydAPI(settings.SCRAPYD_HOST)
-            while True:
-                job_status = _scrapyd.job_status("products", job)
-                if job_status == "finished":
-                    serializer = self.serializer_class(
-                        instance=self.get_object(),
-                        context={
-                            "request": request,
-                            "product_id": self.kwargs.get("id")
-                        }
-                    )
-                    return Response(
-                        serializer.data, status=status.HTTP_200_OK
-                    )
-                elif job_status == "pending" or job_status == "running":
-                    import time
-                    time.sleep(3)
-                else:
-                    return Response(
-                        {"message": "Job failed or unknown status"},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-        except Exception as e:
-            print(e)
-            return Response(
-                {"error": "request failed!"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        asyncio.run(reload_product(self.get_object()))
+        serializer = self.serializer_class(
+            instance=self.get_object(),
+            context={
+                "request": request,
+                "product_id": self.kwargs.get("id")
+            }
+        )
+        return Response(
+            serializer.data, status=status.HTTP_200_OK
+        )
