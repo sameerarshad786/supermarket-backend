@@ -9,7 +9,5 @@ elasticsearch_dsl==8.9.0
 psycopg2==2.9.9
 python_dotenv==1.0.0
 drf-yasg==1.21.7
-scrapyd==1.4.3
-scrapyd_client==1.2.3
 playwright==1.39.0
 aiohttp==3.8.6
