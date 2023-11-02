@@ -2,6 +2,7 @@
 
 import uuid
 from decimal import Decimal
+import django.contrib.postgres.fields
 import django.contrib.postgres.fields.ranges
 import django.core.validators
 from django.db import migrations, models
@@ -52,7 +53,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=500)),
                 ('description', models.TextField()),
                 ('brand', models.CharField(choices=[('not defined', 'Not Defined'), ('apple', 'Apple'), ('samsung', 'Samsung'), ('google', 'Google'), ('lg', 'LG'), ('huawei', 'Huawei'), ('htc', 'HTC'), ('oneplus', 'OnePlus'), ('blackberry', 'BlackBerry'), ('motorola', 'Motorola'), ('nokia', 'Nokia'), ('redmi', 'Redmi'), ('oppo', 'Oppo'), ('vivo', 'Vivo'), ('itel', 'Itel'), ('infinix', 'Infinix'), ('sony', 'Sony'), ('realme', 'Realme'), ('tecno', 'Tecno'), ('xiaomi', 'Xiaomi'), ('honor', 'Honor')], default='not defined', max_length=11)),
-                ('image', models.URLField()),
+                ('images', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=200), default=list)),
                 ('url', models.URLField(max_length=500, unique=True)),
                 ('items_sold', models.PositiveIntegerField(default=0)),
                 ('ratings', models.DecimalField(decimal_places=1, default=0, max_digits=2)),
@@ -60,11 +61,13 @@ class Migration(migrations.Migration):
                 ('original_price', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
                 ('price', django.contrib.postgres.fields.ranges.DecimalRangeField(default=(Decimal('0.00'), Decimal('0.00')))),
                 ('shipping_charges', models.DecimalField(decimal_places=2, default=0, max_digits=5)),
-                ('source', models.CharField(choices=[('not defined', 'Not Defined'), ('amazon', 'Amazon'), ('ebay', 'Ebay'), ('daraz', 'Daraz'), ('ali express', 'Ali Express'), ('ali baba', 'Ali Baba'), ('olx', 'olx')], max_length=11)),
+                ('by', models.CharField(choices=[('not defined', 'Not Defined'), ('amazon', 'Amazon'), ('ebay', 'Ebay'), ('daraz', 'Daraz'), ('ali express', 'Ali Express'), ('ali baba', 'Ali Baba'), ('olx', 'olx')], max_length=11)),
+                ('source', models.CharField(choices=[('scraped', 'Scraped'), ('current', 'Current')], default='scraped')),
                 ('discount', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(-100), django.core.validators.MaxValueValidator(0)])),
                 ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.type')),
                 ('available', models.BooleanField(default=True)),
                 ('meta', models.JSONField(default=dict)),
+                ('html', models.TextField()),
             ],
             options={
                 'abstract': False,

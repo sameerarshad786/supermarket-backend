@@ -1,3 +1,4 @@
+import os
 import re
 import scrapy
 
@@ -13,14 +14,18 @@ from products.models import Product
 
 
 class EbayProductsSpider(scrapy.Spider):
-    name = "product"
-    start_urls = ["https://www.ebay.com/"]
+    name = Product.By.EBAY
 
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'products.pipelines.ProductsPipeline': 100
+        "USER_AGENT": os.getenv("USER_AGENT"),
+        "DEFAULT_REQUEST_HEADERS": {
+           "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+           "Accept-Language": "en"
         }
     }
+
+    def start_requests(self):
+        yield Request(url="https://www.ebay.com/")
 
     def parse(self, response, **kwargs):
         electronic_section = LinkExtractor(
@@ -77,12 +82,12 @@ class EbayProductsSpider(scrapy.Spider):
                 item["brand"] = item.get_brand(brand.text)
                 item["url"] = url
                 item["price"] = item.get_price(price)
-                item["source"] = "ebay"
-                item["image"] = image
+                item["by"] = Product.By.EBAY
+                item["images"] = [image]
                 item["original_price"] = original_price
                 item["items_sold"] = items_sold
                 item["shipping_charges"] = item.get_shipping_charges(shipping)
-                item["ratings"] = item.get_ratings(ratings)
+                item["ratings"] = ratings
                 item["discount"] = item.calc_discount(price, original_price)
                 item["condition"] = Product.Condition.NOT_DEFINED
                 item["type"] = await item.get_type("Electronics")
@@ -139,6 +144,13 @@ class EbayProductsSpider(scrapy.Spider):
         )
 
     def parse_ratings(self, product):
-        return product.xpath(
-            ".//span[@class='b-rating__rating-count']/span/text()"
-        )
+        try:
+            rating = product.xpath(
+                ".//div[@class='star-rating b-rating__rating-star']/@data-stars"
+            )[0]
+            if "-" in rating:
+                rating = rating.split("-")[0]
+                rating = Decimal(rating) + Decimal(.5)
+        except IndexError:
+            rating = 0
+        return rating

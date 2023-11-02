@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
 from products.models import Store
-from products.serializers import TypeSerializer
+from products.serializers import TypeSerializer, ProductSerializer
 from users.serializers import UserSerializer
 
 
 class StoreSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    product = ProductSerializer(many=True)
 
     class Meta:
         model = Store
@@ -17,6 +18,7 @@ class StoreSerializer(serializers.ModelSerializer):
             "url",
             "main_photo",
             "cover_photo",
+            "product",
             "user"
         )
         extra_kwargs = {
@@ -30,6 +32,8 @@ class StoreSerializer(serializers.ModelSerializer):
             fields["name"].required = False
         if method == "GET":
             fields["type"] = TypeSerializer()
+        if self.context.get("show_products", False) is False:
+            fields.pop("product")
         return fields
 
     def create(self, validated_data):

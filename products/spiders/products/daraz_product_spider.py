@@ -12,14 +12,21 @@ from products.models import Product
 
 
 class DarazProductSpider(scrapy.Spider):
-    name = "product"
-    start_urls = ["https://www.daraz.pk/"]
+    name = Product.By.DARAZ
 
     custom_settings = {
-        'ITEM_PIPELINES': {
-            'products.pipelines.ProductsPipeline': 100
+        "ITEM_PIPELINES": {
+            "products.pipelines.ProductsPipeline": 100
         }
     }
+
+    def start_requests(self):
+        yield Request(
+            url="https://www.daraz.pk/",
+            meta={
+                "playwright": True
+            }
+        )
 
     def parse(self, response, **kwargs):
         brand_names = [condition.value for condition in Product.Brand]
@@ -87,8 +94,8 @@ class DarazProductSpider(scrapy.Spider):
             item["brand"] = kwargs["brand"]
             item["url"] = url
             item["price"] = item.get_price(price)
-            item["source"] = "daraz"
-            item["image"] = image
+            item["by"] = Product.By.DARAZ
+            item["images"] = [image]
             item["original_price"] = original_price
             item["items_sold"] = items_sold
             item["shipping_charges"] = shipping

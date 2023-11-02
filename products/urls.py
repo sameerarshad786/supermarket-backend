@@ -16,10 +16,15 @@ PRODUCT_URL_PATTERNS = [
         views.ProductRetrieveAPIView.as_view(),
         name="product-details"
     ),
+    # path(
+    #     "create/",
+    #     views.ProductCreateAPIView.as_view(),
+    #     name="create-product"
+    # ),
     path(
-        "create/",
-        views.ProductCreateAPIView.as_view(),
-        name="create-product"
+        "reload/<uuid:id>/",
+        views.ProductReloadAPIView.as_view(),
+        name="reload"
     )
 ]
 

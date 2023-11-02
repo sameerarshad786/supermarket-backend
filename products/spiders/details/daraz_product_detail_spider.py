@@ -3,16 +3,15 @@ import json
 import scrapy
 
 from decimal import Decimal
-
 from scrapy.http import Request
 
 from products.items import ProductDetailItem
 from products.models import Product, Review
+from products.utils import union
 
 
 class DarazProductDetail(scrapy.Spider):
     name = "product-details"
-    start_urls = ["https://www.daraz.com"]
 
     custom_settings = {
         'ITEM_PIPELINES': {
@@ -20,64 +19,77 @@ class DarazProductDetail(scrapy.Spider):
         }
     }
 
-    async def parse(self, response, **kwargs):
-        daraz_products = Product.objects.filter(source=Product.Source.DARAZ)
-        async for product in daraz_products:
-            yield Request(
-                url=product.url,
-                callback=self.product_details,
-                cb_kwargs={"product": product}
-            )
+    def __init__(self, product, product_id, url, **kwargs):
+        self.product = Product(product)
+        self.product_id = product_id
+        self.url = url
 
-    async def product_details(self, response, **kwargs):
+    def start_requests(self, **kwargs):
+        yield Request(
+            url=self.url,
+            callback=self.parse,
+            cb_kwargs=kwargs
+        )
+
+    async def parse(self, response, **kwargs):
         script_content = response.css('script::text').getall()
 
-        instance: Product = kwargs["product"]
+        instance = await Product.objects.aget(id=self.product_id)
 
         for line in script_content:
             match = re.search(r'app\.run\((.*?)\);', line)
+
             if match:
                 json_data = match.group(1)
-
                 try:
                     data = json.loads(json_data)
-                except json.decoder.JSONDecodeError:
-                    json_data = json_data + ')"}}}}}'
-                    data = json.loads(json_data)
+                    data = data["data"]["root"]["fields"]
 
-                store_data = data["data"]["root"]["fields"]
-                ratings = Decimal(store_data["review"]["ratings"]["average"])
-                instance.ratings = ratings
-                try:
-                    last_object = list(store_data["specifications"].keys())[-1]
-                    instance.meta = store_data["specifications"][last_object]
-                except KeyError:
-                    instance.meta = dict()
-                await instance.asave()
+                    product_options = data["productOption"]["options"]
+                    images = list(map(lambda x: x["image"], product_options))
+                    product = data["product"]
+                    product_detail = ProductDetailItem()
+                    html_desc = product["desc"].replace("\"", "'")
+                    ratings = data["review"]["ratings"]["average"]
+                    instance.ratings = Decimal(ratings)
+                    instance.html = html_desc
+                    instance.images = union(instance.images, images)
+                    instance.description = product["highlights"]
 
-                store = dict()
-                store["name"] = store_data["seller"]["name"]
-                store["url"] = "https:{}".format(store_data["seller"]["url"])
-                store["type_id"] = instance.type_id
-
-                reviews = data["data"]["root"]["fields"]["review"]["reviews"]
-
-                review_list = []
-                for value in reviews:
-                    review = dict()
-                    review["name"] = value["reviewer"]
-                    review["source"] = Review.Sources.SCRAPED
-                    review["review"] = value.get("reviewContent", "")
-                    review["rating"] = Decimal(value["rating"])
                     try:
-                        images = list(map(lambda x: x["url"], value["images"]))
-                        review["images"] = images
-                    except KeyError:
-                        pass
-                    review_list.append(review)
+                        last_object = list(data["specifications"].keys())[-1]
+                        instance.meta = data["specifications"][last_object]
 
-                product_detail = ProductDetailItem()
-                product_detail["store"] = store
-                product_detail["product"] = instance
-                product_detail["reviews"] = review_list
-                yield product_detail
+                    except KeyError:
+                        instance.meta = dict()
+                    await instance.asave()
+                    
+                    reviews = data["review"]["reviews"]
+
+                    review_list = []
+                    for value in reviews:
+                        review = dict()
+                        review["name"] = value["reviewer"]
+                        review["source"] = Review.Source.SCRAPED
+                        review["review"] = value.get("reviewContent", "")
+                        review["rating"] = Decimal(value["rating"])
+                        if value.get("images"):
+                            images = list(map(lambda x: x["url"], value["images"]))
+                            review["images"] = images
+                        review_list.append(review)
+
+                    product_detail["reviews"] = review_list
+                    store = dict()
+                    store["name"] = data["seller"]["name"]
+                    try:
+                        store["url"] = "https:{}".format(data["seller"]["url"])
+                    except KeyError:
+                        store["url"] = ""
+                    store["type_id"] = instance.type_id
+
+                    product_detail["store"] = store
+                    product_detail["product"] = instance
+                    yield product_detail
+
+                except json.decoder.JSONDecodeError as e:
+                    print(e)

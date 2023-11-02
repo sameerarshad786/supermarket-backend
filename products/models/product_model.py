@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import DecimalRangeField
@@ -26,7 +27,7 @@ class Product(UUID):
         REFURBISHED = "refurbished", _("Refurbished")
         DEAD = "dead", _("Dead")
 
-    class Source(models.TextChoices):
+    class By(models.TextChoices):
         NOT_DEFINED = "not defined", _("Not Defined")
         AMAZON = "amazon", _("Amazon")
         EBAY = "ebay", _("Ebay")
@@ -34,6 +35,10 @@ class Product(UUID):
         ALI_EXPRESS = "ali express", _("Ali Express")
         ALI_BABA = "ali baba", _("Ali Baba")
         OLX = "olx", _("olx")
+
+    class Source(models.TextChoices):
+        SCRAPED = ("scraped", _("Scraped"))
+        CURRENT = ("current", _("Current"))
 
     class Brand(models.TextChoices):
         NOT_DEFINED = "not defined", _("Not Defined")
@@ -64,7 +69,7 @@ class Product(UUID):
         max_length=11, choices=Brand.choices, default=Condition.NOT_DEFINED)
     type = models.ForeignKey(
         Type, on_delete=models.SET_NULL, blank=True, null=True)
-    image = models.URLField()
+    images = ArrayField(models.CharField(max_length=200), default=list)
     url = models.URLField(unique=True, max_length=500)
     items_sold = models.PositiveIntegerField(default=0)
     ratings = models.DecimalField(default=0, max_digits=2, decimal_places=1)
@@ -78,10 +83,12 @@ class Product(UUID):
     price = DecimalRangeField(default=(Decimal('0.00'), Decimal('0.00')))
     shipping_charges = models.DecimalField(
         default=0, max_digits=5, decimal_places=2)
-    source = models.CharField(max_length=11, choices=Source.choices)
+    by = models.CharField(max_length=11, choices=By.choices)
+    source = models.CharField(choices=Source.choices, default=Source.SCRAPED)
     discount = models.IntegerField(
         validators=[MinValueValidator(-100), MaxValueValidator(0)], default=0)
     available = models.BooleanField(default=True)
+    html = models.TextField()
     meta = models.JSONField(default=dict)
 
     def get_name(self):
@@ -101,13 +108,13 @@ class Product(UUID):
             meta={"id": self.id},
             id=self.id,
             name=self.name,
-            image=self.image,
+            images=self.images,
             price=price,
             brand=self.brand,
             condition=self.condition,
             ratings=self.ratings,
             discount=self.discount,
-            source=self.source,
+            by=self.by,
             url=self.url,
             created_at=self.created_at.date(),
             updated_at=self.updated_at.date()

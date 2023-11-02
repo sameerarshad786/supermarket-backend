@@ -10,6 +10,11 @@
 import os
 
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supermarket.settings')
+import django
+django.setup()
+
+
 BOT_NAME = "products"
 
 SPIDER_MODULES = ["products.spiders"]
@@ -17,10 +22,10 @@ NEWSPIDER_MODULE = "products.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = os.getenv("USER_AGENT")
+# USER_AGENT = os.getenv("USER_AGENT")
 
 # Obey robots.txt rules
-# ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -28,7 +33,7 @@ USER_AGENT = os.getenv("USER_AGENT")
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 5
+DOWNLOAD_DELAY = 2
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -36,15 +41,19 @@ DOWNLOAD_DELAY = 5
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = True
 
+DOWNLOAD_HANDLERS = {
+    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+}
+
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-DEFAULT_REQUEST_HEADERS = {
-   "User-Agent": USER_AGENT,
-   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-   "Accept-Language": "en"
-}
+# DEFAULT_REQUEST_HEADERS = {
+#    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+#    "Accept-Language": "en"
+# }
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
@@ -67,6 +76,7 @@ SPIDER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+    'products.pipelines.ProductsPipeline': 100
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -94,3 +104,12 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.6"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+PLAYWRIGHT_LAUNCH_OPTIONS = {
+    "headless": False
+}
+PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 100000
+
+EBAY_REFERER = os.getenv("EBAY_REFERER")
+DARAZ_REFERER = os.getenv("DARAZ_REFERER")
+AMAZON_REFERER = os.getenv("AMAZON_REFERER")

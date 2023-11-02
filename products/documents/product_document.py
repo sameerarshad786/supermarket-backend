@@ -1,7 +1,7 @@
 
 from django.conf import settings
 
-from elasticsearch_dsl import Text, Search, Q, Date, Keyword
+from elasticsearch_dsl import Text, Search, Q, Date, Keyword, AttrList
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.document import Document
 
@@ -25,18 +25,18 @@ class ProductDocument(Document):
 
     id = Text()
     name = Text()
-    image = Text()
+    images = AttrList(l=[])
     price = RangeField()
     brand = Keyword()
     condition = Keyword()
-    source = Keyword()
+    by = Keyword()
     url = Text()
     created_at = Date()
     updated_at = Date()
 
     @classmethod
     def search_product_using_es(
-        cls, search, condition, brand, source, price, page, page_size
+        cls, search, condition, brand, by, price, page, page_size
     ) -> list:
         client = elastic_search_client()
         es = Search(
@@ -51,8 +51,9 @@ class ProductDocument(Document):
             should.append(Q("term", condition=condition))
         if brand:
             should.append(Q("term", brand=brand))
-        if source:
-            should.append(Q("term", source=source))
+        if by:
+            should.append(Q("term", by=by))
+
         es = es.query("bool", should=should)
         if price:
             if "," in price:
@@ -93,7 +94,7 @@ class ProductDocument(Document):
                     "name": {"type": "text"},
                     "price": {"type": "float_range"},
                     "condition": {"type": "keyword"},
-                    "source": {"type": "keyword"},
+                    "by": {"type": "keyword"},
                     "brand": {"type": "keyword"},
                     "created_at": {"type": "date"},
                     "updated_at": {"type": "date"}
