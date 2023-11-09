@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Type, Cart, CartItem, Review, Store
+from .models import Product, Category, Brand, Cart, CartItem, Review, Store
 
 
 @admin.register(Product)
@@ -8,19 +8,33 @@ class ProductsAdmin(admin.ModelAdmin):
         "id",
         "get_name",
         "by",
-        "brand",
+        "ratings",
+        "brand_name",
         "created",
         "updated"
     )
     search_fields = ("id", )
 
+    def brand_name(self, obj):
+        return obj.brand.name
 
-@admin.register(Type)
-class TypeAdmin(admin.ModelAdmin):
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "type",
+        "name",
         "valid_name"
+    )
+
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+        "created",
+        "updated"
     )
 
 

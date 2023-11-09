@@ -8,6 +8,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 from products.documents import ProductDocument
+import products.models.product_model
 
 
 def create_products(apps, schema_editor):
@@ -27,15 +28,30 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Type',
+            name='Category',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_deleted', models.BooleanField(default=False)),
-                ('type', models.CharField(max_length=150, unique=True)),
+                ('name', models.CharField(max_length=150, unique=True)),
                 ('valid_name', models.BooleanField(default=False)),
+                ('sub_category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='products.category'))
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='Brand',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('is_active', models.BooleanField(default=True)),
+                ('is_deleted', models.BooleanField(default=False)),
+                ('name', models.CharField(max_length=100, unique=True)),
             ],
             options={
                 'abstract': False,
@@ -52,9 +68,9 @@ class Migration(migrations.Migration):
                 ('is_deleted', models.BooleanField(default=False)),
                 ('name', models.CharField(max_length=500)),
                 ('description', models.TextField()),
-                ('brand', models.CharField(choices=[('not defined', 'Not Defined'), ('apple', 'Apple'), ('samsung', 'Samsung'), ('google', 'Google'), ('lg', 'LG'), ('huawei', 'Huawei'), ('htc', 'HTC'), ('oneplus', 'OnePlus'), ('blackberry', 'BlackBerry'), ('motorola', 'Motorola'), ('nokia', 'Nokia'), ('redmi', 'Redmi'), ('oppo', 'Oppo'), ('vivo', 'Vivo'), ('itel', 'Itel'), ('infinix', 'Infinix'), ('sony', 'Sony'), ('realme', 'Realme'), ('tecno', 'Tecno'), ('xiaomi', 'Xiaomi'), ('honor', 'Honor')], default='not defined', max_length=11)),
+                ('brand', models.ForeignKey(default=products.models.product_model.Brand.default, on_delete=django.db.models.deletion.SET_DEFAULT, to='products.brand')),
                 ('images', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=200), default=list)),
-                ('url', models.URLField(max_length=500, unique=True)),
+                ('url', models.URLField(max_length=500, unique=True, null=True, blank=True)),
                 ('items_sold', models.PositiveIntegerField(default=0)),
                 ('ratings', models.DecimalField(decimal_places=1, default=0, max_digits=2)),
                 ('condition', models.CharField(choices=[('not defined', 'Not Defined'), ('new', 'New'), ('used', 'Used'), ('open box', 'Open Box'), ('refurbished', 'Refurbished'), ('dead', 'Dead')], default='not defined', max_length=11)),
@@ -64,7 +80,7 @@ class Migration(migrations.Migration):
                 ('by', models.CharField(choices=[('not defined', 'Not Defined'), ('amazon', 'Amazon'), ('ebay', 'Ebay'), ('daraz', 'Daraz'), ('ali express', 'Ali Express'), ('ali baba', 'Ali Baba'), ('olx', 'olx')], max_length=11)),
                 ('source', models.CharField(choices=[('scraped', 'Scraped'), ('current', 'Current')], default='scraped')),
                 ('discount', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(-100), django.core.validators.MaxValueValidator(0)])),
-                ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.type')),
+                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.category')),
                 ('available', models.BooleanField(default=True)),
                 ('meta', models.JSONField(default=dict)),
                 ('html', models.TextField()),

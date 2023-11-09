@@ -1,15 +1,15 @@
 from django_filters import rest_framework as filters
 
-from products.models import Type, Product
+from products.models import Category, Product
 from .filter_fields import DecimalRangeFilter
 
 
-class TypeFilter(filters.FilterSet):
-    type = filters.CharFilter(field_name="type", lookup_expr="icontains")
+class CategoryFilter(filters.FilterSet):
+    category = filters.CharFilter(field_name="name", lookup_expr="icontains")
 
     class Meta:
-        model = Type
-        fields = ("type", )
+        model = Category
+        fields = ("category", )
 
 
 class ProductsFilter(filters.FilterSet):

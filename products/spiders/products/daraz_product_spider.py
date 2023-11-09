@@ -4,7 +4,6 @@ import scrapy
 
 from decimal import Decimal
 
-from scrapy.linkextractors import LinkExtractor
 from scrapy.http import Request
 
 from products.items import ProductsItem
@@ -13,6 +12,7 @@ from products.models import Product
 
 class DarazProductSpider(scrapy.Spider):
     name = Product.By.DARAZ
+    start_urls = ["https://www.daraz.pk/"]
 
     custom_settings = {
         "ITEM_PIPELINES": {
@@ -20,52 +20,24 @@ class DarazProductSpider(scrapy.Spider):
         }
     }
 
-    def start_requests(self):
-        yield Request(
-            url="https://www.daraz.pk/",
-            meta={
-                "playwright": True
-            }
-        )
-
     def parse(self, response, **kwargs):
-        brand_names = [condition.value for condition in Product.Brand]
-        categories = LinkExtractor(
-            tags="a", attrs="href", restrict_xpaths="//a[@class='catLink']"
-        ).extract_links(response)
-
-        for category in categories:
-            if category.text.strip().lower().split(" ")[0] in brand_names:
-                brand_index = brand_names.index(
-                    category.text.strip().lower().split(" ")[0]
-                )
-                brand = brand_names[brand_index]
-                kwargs["brand"] = brand
+        for data in response.xpath("//li[@class='lzd-site-menu-sub-item']"):
+            if data.xpath('./a/span/text()').get() in [os.getenv("DARAZ_CATEGORIES")]:
+                url = f"https:{data.xpath('./a/@href').get()}"
                 yield Request(
-                    url=category.url,
-                    callback=self.crawl_pages,
-                    cb_kwargs=kwargs
+                    url=url,
+                    callback=self.crawl_pages
                 )
 
     def crawl_pages(self, response, **kwargs):
-        json_values = response.xpath(
-            "//script[contains(text(), 'window.pageData')]"
-        ).get().replace("</script>", "")
-        try:
-            try_dump_data = json.loads(json_values.split("=", 1)[1])
-        except json.JSONDecodeError:
-            pass
+        start = int(os.getenv("DARAZ_START", 1))
+        end = int(os.getenv("DARAZ_END", 10))
 
-        page_numbers = round(int(try_dump_data["mainInfo"]["totalResults"]) / int(try_dump_data["mainInfo"]["pageSize"])) # noqa
-
-        for page in range(1, page_numbers+1):
-            current_url = response.request.url
-            if current_url.endswith("/"):
-                url = f"{response.request.url}?page={page}"
-            else:
-                url = f"{response.request.url}&page={page}"
+        for page in range(start, end + 1, 1):
+            url = f"{response.request.url}?page={page}"
             yield Request(
-                url, callback=self.parse_product_brands, cb_kwargs=kwargs
+                url=url,
+                callback=self.parse_product_brands
             )
 
     async def parse_product_brands(self, response, **kwargs):
@@ -81,17 +53,20 @@ class DarazProductSpider(scrapy.Spider):
         for product in products:
             url = "https:" + product["productUrl"]
             name = product["name"]
+            description = product["description"][0] if product.get("description") else "" # noqa
+            brand = product["brandName"]
             price = [Decimal(os.getenv("PKR_TO_DOLLAR")) * Decimal(product["price"])] # noqa
             original_price = self.parse_original_price(product, price[0])
             image = product["image"]
             items_sold = 0
+            ratings = Decimal(product["ratingScore"]) if product.get("ratingScore") else 0 # noqa
             shipping = self.calc_shipping(product.get("shipping_charges"))
             discount = int(product["discount"].replace("%", "")) if product.get("discount") else 0 # noqa
 
             item = ProductsItem()
             item["name"] = name
-            item["description"] = ""
-            item["brand"] = kwargs["brand"]
+            item["description"] = description
+            item["brand"] = await item.get_brand(brand)
             item["url"] = url
             item["price"] = item.get_price(price)
             item["by"] = Product.By.DARAZ
@@ -99,10 +74,10 @@ class DarazProductSpider(scrapy.Spider):
             item["original_price"] = original_price
             item["items_sold"] = items_sold
             item["shipping_charges"] = shipping
-            item["ratings"] = item.get_ratings(product.get("shipping_charges"))
+            item["ratings"] = ratings
             item["discount"] = discount
             item["condition"] = Product.Condition.NOT_DEFINED
-            item["type"] = await item.get_type("Electronics")
+            item["category"] = await item.get_category(os.getenv("DARAZ_CATEGORIES"))
             yield item
 
     def parse_original_price(self, product, price):

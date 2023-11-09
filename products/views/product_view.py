@@ -1,28 +1,31 @@
 import asyncio
 
-from rest_framework import generics, status, views
+from rest_framework import generics, status, views, parsers
 from rest_framework.response import Response
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from products.models import Product, Type
-from products.serializers import ProductSerializer, TypeSerializer
+from products.models import Product, Category
+from products.serializers import ProductSerializer, ProductDataSerializer, CategorySerializer
 # from products.documents import ProductDocument
 from products.pagination import StandardResultsSetPagination
-from products.filters import TypeFilter, ProductsFilter
+from products.filters import CategoryFilter, ProductsFilter
 from products.service import filtered_paginated_response, reload_product
 
 
-class SearchTypeAPIView(generics.ListAPIView):
-    serializer_class = TypeSerializer
-    queryset = Type.objects.all()
+class CategorySearchAPIView(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_class = TypeFilter
+    filterset_class = CategoryFilter
+
+    def get_queryset(self):
+        return Category.objects.filter(sub_category__isnull=False)
 
 
 class TypeCreateAPIView(generics.CreateAPIView):
-    serializer_class = TypeSerializer
-    queryset = Type.objects.all()
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
 
 
 class ProductsListAPIView(generics.ListAPIView):
@@ -88,23 +91,19 @@ class ProductsListAPIView(generics.ListAPIView):
 
 
 class ProductRetrieveAPIView(generics.RetrieveAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductDataSerializer
     queryset = Product.objects.all()
-    lookup_field = "id"
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["product_id"] = self.kwargs.get("id")
-        return context
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductDataSerializer
     queryset = Product.objects.all()
+    parser_classes = (parsers.MultiPartParser, )
+    schema = None
 
 
 class ProductReloadAPIView(views.APIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductDataSerializer
 
     def get_object(self):
         return Product.objects.get(id=self.kwargs.get("id"))

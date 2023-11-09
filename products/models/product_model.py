@@ -13,9 +13,25 @@ def scraped_products_media_path(instance, filename):
     return f"scraped-products/{instance.id}/{filename}"
 
 
-class Type(UUID):
-    type = models.CharField(max_length=150, unique=True)
+class Category(UUID):
+    name = models.CharField(max_length=150, unique=True)
     valid_name = models.BooleanField(default=False)
+    sub_category = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Brand(UUID):
+    name = models.CharField(max_length=100, unique=True)
+
+    @staticmethod
+    def default():
+        return Brand.objects.get(name="No brand")
 
 
 class Product(UUID):
@@ -40,37 +56,13 @@ class Product(UUID):
         SCRAPED = ("scraped", _("Scraped"))
         CURRENT = ("current", _("Current"))
 
-    class Brand(models.TextChoices):
-        NOT_DEFINED = "not defined", _("Not Defined")
-        APPLE = "apple", _("Apple")
-        SAMSUNG = "samsung", _("Samsung")
-        GOOGLE = "google", _("Google")
-        LG = "lg", _("LG")
-        HUAWEI = "huawei", _("Huawei")
-        HTC = "htc", _("HTC")
-        ONEPLUS = "oneplus", _("OnePlus")
-        BLACKBERRY = "blackberry", _("BlackBerry")
-        MOTOROLA = "motorola", _("Motorola")
-        NOKIA = "nokia", _("Nokia")
-        REDMI = "redmi", _("Redmi")
-        OPPO = "oppo", _("Oppo")
-        VIVO = "vivo", _("Vivo")
-        ITEL = "itel", _("Itel")
-        INFINIX = "infinix", _("Infinix")
-        SONY = "sony", _("Sony")
-        REALME = "realme", _("Realme")
-        TECHNO = "tecno", _("Tecno")
-        XIAOMI = "xiaomi", _("Xiaomi")
-        HONOR = "honor", _("Honor")
-
     name = models.CharField(max_length=500)
     description = models.TextField()
-    brand = models.CharField(
-        max_length=11, choices=Brand.choices, default=Condition.NOT_DEFINED)
-    type = models.ForeignKey(
-        Type, on_delete=models.SET_NULL, blank=True, null=True)
+    brand = models.ForeignKey(Brand, on_delete=models.SET_DEFAULT, default=Brand.default)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, blank=True, null=True)
     images = ArrayField(models.CharField(max_length=200), default=list)
-    url = models.URLField(unique=True, max_length=500)
+    url = models.URLField(unique=True, max_length=500, null=True, blank=True)
     items_sold = models.PositiveIntegerField(default=0)
     ratings = models.DecimalField(default=0, max_digits=2, decimal_places=1)
     condition = models.CharField(
@@ -104,13 +96,23 @@ class Product(UUID):
         price = {
             "gt": float(self.price.lower)
         }
+        brand = {
+            "id": str(self.brand.id),
+            "name": str(self.brand.name)
+        }
+        category = {
+            "id": str(self.category_id),
+            "name": str(self.category.name),
+            "sub_category": str(self.category.sub_category.name) if self.category.sub_category else None
+        }
         obj = ProductDocument(
             meta={"id": self.id},
             id=self.id,
             name=self.name,
             images=self.images,
             price=price,
-            brand=self.brand,
+            brand=brand,
+            category=category,
             condition=self.condition,
             ratings=self.ratings,
             discount=self.discount,
