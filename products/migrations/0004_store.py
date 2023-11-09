@@ -27,12 +27,17 @@ class Migration(migrations.Migration):
                 ('main_photo', models.ImageField(default='store/main/main.png', upload_to=products.models.store_model.store_main_photo_path)),
                 ('cover_photo', models.ImageField(default='store/cover/cover.png', upload_to=products.models.store_model.store_cover_photo_path)),
                 ('product', models.ManyToManyField(to='products.product')),
-                ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.type')),
+                ('by', models.CharField(choices=[('not defined', 'Not Defined'), ('amazon', 'Amazon'), ('ebay', 'Ebay'), ('daraz', 'Daraz'), ('ali express', 'Ali Express'), ('ali baba', 'Ali Baba'), ('olx', 'olx')], max_length=11)),
+                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.category')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('url', models.URLField(unique=True))
+                ('url', models.URLField(unique=True, max_length=500, null=True, blank=True))
             ],
             options={
                 'abstract': False,
             },
+        ),
+        migrations.AlterModelOptions(
+            name='category',
+            options={'verbose_name_plural': 'Categories'},
         ),
     ]

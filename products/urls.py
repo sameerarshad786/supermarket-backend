@@ -3,8 +3,8 @@ from django.urls import path, include
 from . import views
 
 
-TYPE_URL_PATTERNS = [
-    path("search/", views.SearchTypeAPIView.as_view(), name="search-type"),
+CATEGORY_URL_PATTERNS = [
+    path("search/", views.CategorySearchAPIView.as_view(), name="search-type"),
     path("create/", views.TypeCreateAPIView.as_view(), name="create-type")
 ]
 
@@ -12,15 +12,15 @@ TYPE_URL_PATTERNS = [
 PRODUCT_URL_PATTERNS = [
     path("list/", views.ProductsListAPIView.as_view(), name="products-list"),
     path(
-        "retrieve/<uuid:id>/",
+        "retrieve/<uuid:pk>/",
         views.ProductRetrieveAPIView.as_view(),
         name="product-details"
     ),
-    # path(
-    #     "create/",
-    #     views.ProductCreateAPIView.as_view(),
-    #     name="create-product"
-    # ),
+    path(
+        "create/",
+        views.ProductCreateAPIView.as_view(),
+        name="create-product"
+    ),
     path(
         "reload/<uuid:id>/",
         views.ProductReloadAPIView.as_view(),
@@ -71,9 +71,9 @@ REVIEW_URL_PATTERNS = [
 
 
 urlpatterns = [
-    path("type/", include(TYPE_URL_PATTERNS)),
+    path("category/", include(CATEGORY_URL_PATTERNS)),
     path("products/", include(PRODUCT_URL_PATTERNS)),
     path("carts/", include(CART_URL_PATTERNS)),
     path("store/", include(STORE_URL_PATTERNS)),
-    # path("review/<uuid:product_id>/", include(REVIEW_URL_PATTERNS))
+    path("review/<uuid:product_id>/", include(REVIEW_URL_PATTERNS))
 ]

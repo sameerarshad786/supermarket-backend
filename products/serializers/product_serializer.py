@@ -1,23 +1,41 @@
 from rest_framework import serializers
 
-from products.models import Product, Type
+from products.models import Category, Brand, Product, Store
 from .serializer_fields import DecimalRangeFieldSerializer
 from .review_serializer import ReviewSerializer
 
 
-class TypeSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
+    sub_category = serializers.SerializerMethodField()
+
     class Meta:
-        model = Type
-        fields = ("id", "type")
+        model = Category
+        fields = ("id", "name", "sub_category")
 
     def create(self, validated_data):
-        type = validated_data.get("type").capitalize()
-        return Type.objects.create(type=type)
+        name = validated_data.get("name").capitalize()
+        return Category.objects.create(name=name)
+
+    def get_sub_category(self, obj):
+        return obj.sub_category.name if obj.sub_category else None
+
+
+class BrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ("id", "name")
 
 
 class ProductSerializer(serializers.ModelSerializer):
     price = DecimalRangeFieldSerializer()
     on_cart = serializers.SerializerMethodField()
+    by = serializers.CharField(default=Product.By.NOT_DEFINED)
+    detail = serializers.HyperlinkedIdentityField(
+        view_name="product-details",
+        lookup_field="pk"
+    )
+    brand = BrandSerializer()
+    category = CategorySerializer(required=False)
 
     class Meta:
         model = Product
@@ -27,39 +45,52 @@ class ProductSerializer(serializers.ModelSerializer):
             "images",
             "price",
             "ratings",
-            "brand",
             "condition",
+            "category",
             "discount",
+            "brand",
+            "detail",
             "by",
-            "url",
             "on_cart"
         ]
 
+    def get_on_cart(self, obj):
+        user = self.context["request"].user
+        return user.cart.cart_item.filter(product_id=obj.id).exists()
+
+    def create(self, validated_data):
+        product = Product.objects.create(**validated_data)
+        store = Store.objects.get(id=validated_data["store"])
+        store.product.add(product)
+        return product
+
+
+class ProductDataSerializer(serializers.ModelSerializer):
+    price = DecimalRangeFieldSerializer()
+    reload = serializers.HyperlinkedIdentityField(
+        view_name="reload",
+        lookup_field="id"
+    )
+    reviews = serializers.SerializerMethodField()
+    store = serializers.SerializerMethodField()
+    brand = BrandSerializer()
+
+    class Meta:
+        model = Product
+        exclude = (
+            "is_active",
+            "is_deleted"
+        )
+
     def get_fields(self):
-        product_id = self.context.get("product_id")
+        request = self.context["request"]
         fields = super().get_fields()
-        if product_id:
+        if request.method == "POST":
             fields.update({
-                "description": serializers.CharField(),
-                "items_sold": serializers.IntegerField(),
-                "original_price": serializers.DecimalField(
-                    max_digits=7, decimal_places=2),
-                "html": serializers.CharField(),
-                "store": serializers.SerializerMethodField(),
-                "shipping_charges": serializers.DecimalField(
-                    max_digits=5, decimal_places=2),
-                "reviews": serializers.SerializerMethodField(),
-                "meta": serializers.JSONField(),
-                "reload": serializers.HyperlinkedIdentityField(
-                    view_name="reload",
-                    lookup_field="id"
-                )
-            })
-        else:
-            fields.update({
-                "detail": serializers.HyperlinkedIdentityField(
-                    view_name="product-details",
-                    lookup_field="id"
+                "source": serializers.CharField(default=Product.Source.CURRENT),
+                "store": serializers.UUIDField(),
+                "images": serializers.ListField(
+                    child=serializers.FileField(required=False), required=False
                 )
             })
         return fields
@@ -79,7 +110,3 @@ class ProductSerializer(serializers.ModelSerializer):
                 context={**self.context},
             ).data
         return {}
-
-    def get_on_cart(self, obj):
-        user = self.context["request"].user
-        return user.cart.cart_item.filter(product_id=obj.id).exists()

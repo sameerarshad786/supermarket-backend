@@ -8,8 +8,7 @@ from users.serializers import UserSerializer
 
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    by = serializers.CharField(
-        default=Review.Source.CURRENT, read_only=True)
+    source = serializers.CharField(default=Review.Source.CURRENT)
 
     class Meta:
         model = Review
@@ -18,7 +17,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             "name",
             "rating",
             "review",
-            "by",
+            "source",
             "user",
             "images"
         )
@@ -48,18 +47,20 @@ class ReviewSerializer(serializers.ModelSerializer):
                     f.write(chunk)
                     images.append(f.name)
 
-        review = Review.objects.create(
+        return Review.objects.create(
             user=user,
             images=images,
             product_id=product_id,
             **validated_data
         )
-        return review
 
     def to_representation(self, instance: Review):
         representation = super().to_representation(instance)
         images = []
-        if instance.source == Review.Source.CURRENT and instance.images:
+        if (
+            instance.source == Review.Source.CURRENT and
+            settings.DEBUG
+        ):
             images = list(
                 map(lambda x: f"{settings.FRONTEND_URL}{x}", instance.images)
             )

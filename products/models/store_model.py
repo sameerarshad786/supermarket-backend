@@ -1,8 +1,9 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from utils.mixins import UUID
 from users.models import User
-from .product_model import Product, Type
+from .product_model import Product, Category
 
 
 def store_main_photo_path(instance, filename):
@@ -14,6 +15,15 @@ def store_cover_photo_path(instance, filename):
 
 
 class Store(UUID):
+    class By(models.TextChoices):
+        NOT_DEFINED = "not defined", _("Not Defined")
+        AMAZON = "amazon", _("Amazon")
+        EBAY = "ebay", _("Ebay")
+        DARAZ = "daraz", _("Daraz")
+        ALI_EXPRESS = "ali express", _("Ali Express")
+        ALI_BABA = "ali baba", _("Ali Baba")
+        OLX = "olx", _("olx")
+
     name = models.CharField(max_length=100)
     main_photo = models.ImageField(
         default="store/main/main.png", upload_to=store_main_photo_path
@@ -27,7 +37,8 @@ class Store(UUID):
         blank=True,
         null=True
     )
-    type = models.ForeignKey(
-        Type, on_delete=models.SET_NULL, blank=True, null=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, blank=True, null=True)
+    by = models.CharField(max_length=11, choices=By.choices)
     product = models.ManyToManyField(Product)
-    url = models.URLField(unique=True)
+    url = models.URLField(unique=True, max_length=500, null=True, blank=True)

@@ -1,12 +1,10 @@
 from rest_framework import serializers
 
 from products.models import Store
-from products.serializers import TypeSerializer, ProductSerializer
-from users.serializers import UserSerializer
+from products.serializers import CategorySerializer, ProductSerializer
 
 
 class StoreSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
     product = ProductSerializer(many=True)
 
     class Meta:
@@ -14,12 +12,11 @@ class StoreSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "name",
-            "type",
+            "category",
             "url",
             "main_photo",
             "cover_photo",
-            "product",
-            "user"
+            "product"
         )
         extra_kwargs = {
             "product": {"required": False}
@@ -31,7 +28,7 @@ class StoreSerializer(serializers.ModelSerializer):
         if method == "PATCH":
             fields["name"].required = False
         if method == "GET":
-            fields["type"] = TypeSerializer()
+            fields["category"] = CategorySerializer()
         if self.context.get("show_products", False) is False:
             fields.pop("product")
         return fields

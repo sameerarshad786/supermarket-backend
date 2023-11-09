@@ -1,7 +1,7 @@
 
 from django.conf import settings
 
-from elasticsearch_dsl import Text, Search, Q, Date, Keyword, AttrList
+from elasticsearch_dsl import Text, Search, Q, Date, Keyword, AttrList, Object
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.document import Document
 
@@ -27,7 +27,8 @@ class ProductDocument(Document):
     name = Text()
     images = AttrList(l=[])
     price = RangeField()
-    brand = Keyword()
+    brand = Object()
+    category = Object()
     condition = Keyword()
     by = Keyword()
     url = Text()
@@ -95,7 +96,8 @@ class ProductDocument(Document):
                     "price": {"type": "float_range"},
                     "condition": {"type": "keyword"},
                     "by": {"type": "keyword"},
-                    "brand": {"type": "keyword"},
+                    "brand": {"type": "object"},
+                    "category": {"type": "object"},
                     "created_at": {"type": "date"},
                     "updated_at": {"type": "date"}
                 }

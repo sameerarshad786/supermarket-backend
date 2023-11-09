@@ -10,7 +10,7 @@ from decimal import Decimal
 
 from psycopg2.extras import NumericRange
 
-from products.models import Product, Type
+from products.models import Category, Brand, Product
 
 
 class ProductsItem(scrapy.Item):
@@ -18,7 +18,7 @@ class ProductsItem(scrapy.Item):
     description = scrapy.Field()
     url = scrapy.Field()
     brand = scrapy.Field()
-    type = scrapy.Field()
+    category = scrapy.Field()
     images = scrapy.Field()
     ratings = scrapy.Field()
     items_sold = scrapy.Field()
@@ -31,14 +31,18 @@ class ProductsItem(scrapy.Item):
     available = scrapy.Field()
     meta = scrapy.Field()
 
-    def get_brand(self, brand):
-        if brand:
-            brand_names = [condition.value for condition in Product.Brand]
-            brand = brand.lower().split(" ")[0]
-            brand = brand_names.index(brand)
-            return brand_names[brand]
-        else:
-            return brand[0]
+    async def get_brand(self, brand):
+        brand = brand.replace("_", "")
+        if "," in brand:
+            brand = brand.split(",")[0]
+        try:
+            instance = await Brand.objects.aget(name__icontains=brand)
+        except Brand.DoesNotExist:
+            instance = await Brand.objects.acreate(name=brand.capitalize())
+        except Brand.MultipleObjectsReturned:
+            instance = await Brand.objects.filter(name__icontains=brand).afirst()
+
+        return instance
 
     def get_price(self, price: list):
         if len(price) == 1:
@@ -55,42 +59,38 @@ class ProductsItem(scrapy.Item):
             return 0.00
 
     def get_shipping_charges(self, shipping):
-        if list(filter(lambda x: re.search(r"\d", x), shipping)):
-            return Decimal(re.sub(r"[^\d.]", "", shipping[0]))
-        else:
-            return 0.00
+        shipping_ = re.sub(r"[^\d.]", "", shipping)
+        return shipping_ if shipping_ != '' else 0
 
     def calc_discount(self, price, original_price):
         if original_price:
+            original_price = Decimal(original_price)
             price = Decimal(price[0])
             return ((original_price-price)/original_price)*100
         return 0
 
-    async def get_type(self, type):
+    async def get_category(self, category, sub_category=None):
         try:
-            instance = await Type.objects.aget(type__icontains=type)
-        except Type.DoesNotExist:
-            instance = await Type.objects.acreate(type=type)
+            category = await Category.objects.aget(name__icontains=category)
+        except Category.DoesNotExist:
+            category = await Category.objects.acreate(name=category)
 
-        return instance
+        if sub_category:
+            try:
+                sub_category = await Category.objects.aget(
+                    sub_category=category,
+                    name__icontains=sub_category
+                )
+            except Category.DoesNotExist:
+                sub_category = await Category.objects.acreate(
+                    sub_category=category,
+                    name=sub_category
+                )
+            return sub_category
+        return category
 
-
-class StoreItem(scrapy.Item):
-    name = scrapy.Field()
-    url = scrapy.Field()
-    main_photo = scrapy.Field()
-    type_id = scrapy.Field()
-
-
-class ReviewItem(scrapy.Item):
-    name = scrapy.Field()
-    rating = scrapy.Field()
-    review = scrapy.Field()
-    source = scrapy.Field()
-    images = scrapy.Field()
-
-
-class ProductDetailItem(scrapy.Item):
-    store = scrapy.Field(serializer=StoreItem)
-    reviews = scrapy.Field(serializer=list)
-    product = scrapy.Field(serializer=ProductsItem)
+    def get_condition(self, condition):
+        for value in Product.Condition:
+            if value._value_ in condition.lower():
+                return value._value_
+        return Product.Condition.NOT_DEFINED
