@@ -8,10 +8,7 @@ profile_values = Signal(["user", "profile"])
 
 
 @receiver(profile_values)
-def create_profile_signal(sender, user, profile, **kwargs):
-    profile = Profile(user=user, **profile)
-    if profile.gender == Profile.Gender.MALE:
-        profile.image = "profile/default/male.png"
-    else:
-        profile.image = "profile/default/female.png"
+def profile_signal(sender, user, profile, **kwargs):
+    profile = Profile.objects.create(user=user, **profile)
+    Profile.update_image(profile)
     profile.save()

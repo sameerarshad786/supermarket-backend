@@ -15,6 +15,13 @@ class Profile(UUID):
         FEMALE = ("female", _("Female"))
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=30)
+    full_name = models.CharField(max_length=30, blank=True)
     gender = models.CharField(max_length=10, choices=Gender.choices)
-    image = models.ImageField(upload_to=profile_photo_path)
+    image = models.ImageField(upload_to=profile_photo_path, blank=True)
+
+    def update_image(self):
+        if self.gender == Profile.Gender.MALE:
+            self.image = "profile/default/male.png"
+        else:
+            self.image = "profile/default/female.png"
+        self.save()

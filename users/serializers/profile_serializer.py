@@ -9,26 +9,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "full_name",
+            "image",
             "gender"
         )
         extra_kwargs = {
             "user": {"read_only": True}
         }
 
-    def get_fields(self):
-        user = self.context["request"].user
-        fields = super().get_fields()
-        if user.is_anonymous:
-            return fields
-        else:
-            fields.update({
-                "image": serializers.ImageField(required=False)
-            })
-        return fields
-
     def update(self, instance, validated_data):
         for x, y in validated_data.items():
             setattr(instance, x, y)
+        if not validated_data.get("image"):
+            Profile.update_image(instance)
         return instance
 
 

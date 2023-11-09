@@ -22,9 +22,9 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_deleted', models.BooleanField(default=False)),
-                ('full_name', models.CharField(max_length=30)),
+                ('full_name', models.CharField(max_length=30, blank=True)),
                 ('gender', models.CharField(choices=[('male', 'Male'), ('female', 'Female')], max_length=10)),
-                ('image', models.ImageField(upload_to=users.models.profile_model.profile_photo_path)),
+                ('image', models.ImageField(upload_to=users.models.profile_model.profile_photo_path, blank=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
