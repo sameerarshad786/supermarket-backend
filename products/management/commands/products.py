@@ -5,7 +5,7 @@ from scrapy.settings import Settings
 
 from products import settings as my_settings
 from products.spiders import (
-    EbayProductsSpider, DarazProductSpider, AmazonProductSpider
+    EbayProductsSpider, DarazProductSpider
 )
 
 
@@ -17,6 +17,5 @@ class Command(BaseCommand):
         crawler_settings.setmodule(my_settings)
         runner = CrawlerProcess(settings=crawler_settings)
         runner.crawl(EbayProductsSpider)
-        # runner.crawl(DarazProductSpider)
-        # runner.crawl(AmazonProductSpider)
+        runner.crawl(DarazProductSpider)
         runner.start()
