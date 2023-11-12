@@ -14,7 +14,7 @@ class Review(UUID):
 
     name = models.CharField(max_length=50)
     review = models.TextField()
-    rating = models.DecimalField(max_digits=2, decimal_places=1)
+    rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
     source = models.CharField(choices=Source.choices, default=Source.SCRAPED)
     user = models.ForeignKey(
         User,

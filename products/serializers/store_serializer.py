@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from rest_framework import serializers
 
 from products.models import Store
@@ -36,3 +38,11 @@ class StoreSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context["request"].user
         return Store.objects.create(user=user, **validated_data)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if not instance.cover_photo.startswith("http"):
+            representation["cover_photo"] = f"{settings.FRONTEND_URL}media/{instance.cover_photo}"
+        if not instance.main_photo.startswith("http"):
+            representation["main_photo"] = f"{settings.FRONTEND_URL}media/{instance.main_photo}"
+        return representation

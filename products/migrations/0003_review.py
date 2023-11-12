@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.product')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
                 ('images', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=200), default=list)),
-                ('rating', models.DecimalField(decimal_places=1, max_digits=2))
+                ('rating', models.DecimalField(decimal_places=1, max_digits=2, null=True, blank=True))
             ],
             options={
                 'abstract': False,
