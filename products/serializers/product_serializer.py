@@ -30,10 +30,6 @@ class ProductSerializer(serializers.ModelSerializer):
     price = DecimalRangeFieldSerializer()
     on_cart = serializers.SerializerMethodField()
     by = serializers.CharField(default=Product.By.NOT_DEFINED)
-    detail = serializers.HyperlinkedIdentityField(
-        view_name="product-details",
-        lookup_field="pk"
-    )
     brand = BrandSerializer()
     category = CategorySerializer(required=False)
 
@@ -46,10 +42,10 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "ratings",
             "condition",
+            "url",
             "category",
             "discount",
             "brand",
-            "detail",
             "by",
             "on_cart"
         ]
