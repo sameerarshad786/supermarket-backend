@@ -1,5 +1,5 @@
 from products.models import Product
-from products.spiders import DarazProductDetailSpider, EbayProductDetailSpider
+from products.spiders import details
 
 
 def filtered_paginated_response(self, queryset):
@@ -13,14 +13,9 @@ def filtered_paginated_response(self, queryset):
 
 
 async def reload_product(product: Product):
-    if product.by == Product.By.DARAZ:
-        await DarazProductDetailSpider(
-            product
-        ).start_request(product.url)
-    elif product.by == Product.By.EBAY:
-        await EbayProductDetailSpider(
-            product
-        ).start_request(product.url)
+    class_name = f"{product.by.capitalize()}ProductDetailSpider"
+    spider = getattr(details, class_name)
+    await spider(product).start_request(product.url)
 
 
 def union(lst1, lst2):
