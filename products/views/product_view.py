@@ -1,6 +1,6 @@
 import asyncio
 
-from rest_framework import generics, status, views, parsers
+from rest_framework import generics, status, views, parsers, permissions
 from rest_framework.response import Response
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -34,6 +34,7 @@ class ProductsListAPIView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductsFilter
     queryset = Product.objects.all().order_by("-created_at", "-updated_at")
+    permission_classes = [permissions.AllowAny]
 
     def list(self, request, *args, **kwargs):
         search = self.request.GET.get("search")
@@ -93,6 +94,7 @@ class ProductsListAPIView(generics.ListAPIView):
 class ProductRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = ProductDataSerializer
     queryset = Product.objects.all()
+    permission_classes = [permissions.AllowAny]
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
@@ -104,6 +106,7 @@ class ProductCreateAPIView(generics.CreateAPIView):
 
 class ProductReloadAPIView(views.APIView):
     serializer_class = ProductDataSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get_object(self):
         return Product.objects.get(id=self.kwargs.get("id"))
