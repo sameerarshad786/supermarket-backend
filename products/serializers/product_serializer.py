@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from products.models import Category, Brand, Product, Store
+from products.models import Category, Brand, Product, Store, Cart
 from .serializer_fields import DecimalRangeFieldSerializer
 from .review_serializer import ReviewSerializer
 
@@ -52,7 +52,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_on_cart(self, obj):
         user = self.context["request"].user
-        return user.cart.cart_item.filter(product_id=obj.id).exists()
+        if user.is_authenticated:
+            return user.cart.cart_item.filter(product_id=obj.id).exists()
+        else:
+            return False
 
     def create(self, validated_data):
         product = Product.objects.create(**validated_data)
