@@ -6,9 +6,6 @@ from products.models import Cart
 from users.models import User
 
 
-cart_values = Signal(["user", "cart_item"])
-
-
 @receiver(post_save, sender=User)
 def create_cart(sender, instance, created, **kwargs):
     """

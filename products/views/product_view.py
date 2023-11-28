@@ -18,9 +18,10 @@ class CategorySearchAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = CategoryFilter
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return Category.objects.filter(sub_category__isnull=False)
+        return Category.objects.filter(valid_name=True)
 
 
 class TypeCreateAPIView(generics.CreateAPIView):
