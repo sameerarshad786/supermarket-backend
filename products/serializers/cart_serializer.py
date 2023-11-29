@@ -30,8 +30,17 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    cart_item = CartItemSerializer(many=True)
+    cart_item = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
         fields = ("id", "cart_item")
+
+    def get_cart_item(self, obj):
+        request = self.context["request"]
+        cart_item = obj.cart_item.all().order_by("-created_at")
+        return CartItemSerializer(
+            cart_item,
+            context={"request": request},
+            many=True
+        ).data

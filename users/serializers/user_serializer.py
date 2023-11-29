@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 
 from users.models import User
 from .profile_serializer import ProfileSerializer
@@ -44,4 +46,6 @@ class HandleUserAuthenticationSeriaizer(serializers.ModelSerializer):
         password = attrs.get("password")
 
         user = authenticate(email=email, password=password)
-        return user
+        if user:
+            return user
+        raise AuthenticationFailed(_("email or password is incorrect"))
