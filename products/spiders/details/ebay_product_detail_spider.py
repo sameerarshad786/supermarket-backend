@@ -54,7 +54,10 @@ class EbayProductDetailSpider:
         product["brand"] = await ProductsItem.get_brand(ProductsItem, details["product"]["brand"]["name"])
         product["url"] = instance.url
         product["price"] = ProductsItem.get_price(ProductsItem, price)
-        product["shipping"] = Decimal(details["product"]["offers"]["shippingDetails"]["shippingRate"]["value"])
+        try:
+            product["shipping"] = Decimal(details["product"]["offers"]["shippingDetails"]["shippingRate"]["value"])
+        except KeyError:
+            pass
         try:
             product["rating"] = Decimal(data["REVIEWS"]["starRating"]["averageRating"]["value"])
         except KeyError:
