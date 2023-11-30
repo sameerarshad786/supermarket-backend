@@ -25,8 +25,10 @@ class Store(UUID):
         OLX = "olx", _("olx")
 
     name = models.CharField(max_length=100)
-    main_photo = models.CharField(max_length=200, default="store/main/main.png")
-    cover_photo = models.CharField(max_length=200, default="store/cover/cover.png")
+    main_photo = models.CharField(
+        max_length=200, default="store/main/main.png")
+    cover_photo = models.CharField(
+        max_length=200, default="store/cover/cover.png")
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

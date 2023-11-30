@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from products.models import Category, Brand, Product, Store, Cart
+from products.models import Category, Brand, Product, Store
 from .serializer_fields import DecimalRangeFieldSerializer
 from .review_serializer import ReviewSerializer
 
@@ -86,10 +86,12 @@ class ProductDataSerializer(serializers.ModelSerializer):
         fields = super().get_fields()
         if request.method == "POST":
             fields.update({
-                "source": serializers.CharField(default=Product.Source.CURRENT),
+                "source": serializers.CharField(
+                    default=Product.Source.CURRENT),
                 "store": serializers.UUIDField(),
                 "images": serializers.ListField(
-                    child=serializers.FileField(required=False), required=False
+                    child=serializers.FileField(required=False),
+                    required=False
                 )
             })
         return fields
