@@ -17,41 +17,27 @@ class EbayProductsSpider(scrapy.Spider):
     name = Product.By.EBAY
     start_urls = ["https://www.ebay.com/"]
 
-    custom_settings = {
-        "USER_AGENT": os.getenv("USER_AGENT"),
-        "DEFAULT_REQUEST_HEADERS": {
-           "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-           "Accept-Language": "en"
-        }
-    }
-
     def parse(self, response, **kwargs):
         categories_to_scrape = [os.getenv("EBAY_CATEGORIES")]
-        for data in response.xpath("//li/a[@class='gh-ham-menu__link']"):
-            for category in categories_to_scrape:
-                if data.xpath("./span/text()").get() == category:
-                    url = data.xpath('./@href').get()
-                    kwargs["category"] = category
-                    yield Request(
-                        url=url,
-                        callback=self.crawl_subcategories,
-                        cb_kwargs=kwargs
-                    )
+        for category in categories_to_scrape:
+            url = response.xpath(f"//ul/li[contains(a, '{category}')]/a/@href").get()
+            kwargs["category"] = category
+            yield Request(
+                url=url,
+                callback=self.crawl_subcategories,
+                cb_kwargs=kwargs
+            )
 
     def crawl_subcategories(self, response, **kwargs):
         sub_categories = [os.getenv("EBAY_SUBCATEGORY")]
-        sections = response.xpath("//a[@class='b-visualnav__tile b-visualnav__tile__default']")
-
-        for section in sections:
-            for sub_category in sub_categories:
-                if section.xpath("./div/text()").get() == sub_category:
-                    url = section.xpath("./@href").get()
-                    kwargs["sub_category"] = sub_category
-                    yield Request(
-                        url=url,
-                        callback=self.crawl_sections,
-                        cb_kwargs=kwargs
-                    )
+        for sub_category in sub_categories:
+            url = response.xpath(f"//a[contains(div/text(), '{sub_category}')]/@href").get()
+            kwargs["sub_category"] = sub_category
+            yield Request(
+                url=url,
+                callback=self.crawl_sections,
+                cb_kwargs=kwargs
+            )
 
     async def crawl_sections(self, response, **kwargs):
         # start = int(os.getenv("EBAY_START", 1))
@@ -59,7 +45,7 @@ class EbayProductsSpider(scrapy.Spider):
         links = LinkExtractor(
             tags="a",
             attrs="href",
-            restrict_xpaths="//div/a[@class='b-visualnav__tile b-visualnav__tile__default']"
+            restrict_xpaths="//span[@class='b-visualnav__tile b-visualnav__tile__default']/a"
         ).extract_links(response)
         for data in links:
             name = data.text.lower().split(" ")

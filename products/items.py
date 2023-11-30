@@ -69,11 +69,12 @@ class ProductsItem(scrapy.Item):
             return ((original_price-price)/original_price)*100
         return 0
 
-    async def get_category(self, category, sub_category=None):
-        try:
-            category = await Category.objects.aget(name__icontains=category)
-        except Category.DoesNotExist:
-            category = await Category.objects.acreate(name=category)
+    async def get_category(self, sub_category, category=None):
+        if category:
+            try:
+                category = await Category.objects.aget(name__icontains=category)
+            except Category.DoesNotExist:
+                category = await Category.objects.acreate(name=category)
 
         if sub_category:
             try:
@@ -87,7 +88,7 @@ class ProductsItem(scrapy.Item):
                     name=sub_category
                 )
             return sub_category
-        return category
+        return sub_category
 
     def get_condition(self, condition):
         for value in Product.Condition:

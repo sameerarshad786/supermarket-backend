@@ -22,10 +22,10 @@ NEWSPIDER_MODULE = "products.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = os.getenv("USER_AGENT")
+USER_AGENT = os.getenv("USER_AGENT")
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
