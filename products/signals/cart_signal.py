@@ -1,6 +1,5 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.dispatch import Signal
 
 from products.models import Cart
 from users.models import User

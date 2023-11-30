@@ -40,7 +40,8 @@ class ProductsItem(scrapy.Item):
         except Brand.DoesNotExist:
             instance = await Brand.objects.acreate(name=brand.capitalize())
         except Brand.MultipleObjectsReturned:
-            instance = await Brand.objects.filter(name__icontains=brand).afirst()
+            instance = await Brand.objects.filter(
+                name__icontains=brand).afirst()
 
         return instance
 
@@ -72,7 +73,8 @@ class ProductsItem(scrapy.Item):
     async def get_category(self, sub_category, category=None):
         if category:
             try:
-                category = await Category.objects.aget(name__icontains=category)
+                category = await Category.objects.aget(
+                    name__icontains=category)
             except Category.DoesNotExist:
                 category = await Category.objects.acreate(name=category)
 

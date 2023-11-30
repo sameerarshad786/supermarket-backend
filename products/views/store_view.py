@@ -12,7 +12,7 @@ class SearchStoreAPIView(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ["id", "name"]
-    
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["show_products"] = True

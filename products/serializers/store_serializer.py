@@ -42,7 +42,7 @@ class StoreSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if not instance.cover_photo.startswith("http"):
-            representation["cover_photo"] = f"{settings.FRONTEND_URL}media/{instance.cover_photo}"
+            representation["cover_photo"] = f"{settings.FRONTEND_URL}media/{instance.cover_photo}" # noqa
         if not instance.main_photo.startswith("http"):
-            representation["main_photo"] = f"{settings.FRONTEND_URL}media/{instance.main_photo}"
+            representation["main_photo"] = f"{settings.FRONTEND_URL}media/{instance.main_photo}" # noqa
         return representation

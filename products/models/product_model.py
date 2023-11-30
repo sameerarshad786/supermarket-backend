@@ -58,7 +58,11 @@ class Product(UUID):
 
     name = models.CharField(max_length=500)
     description = models.TextField()
-    brand = models.ForeignKey(Brand, on_delete=models.SET_DEFAULT, default=Brand.default)
+    brand = models.ForeignKey(
+        Brand,
+        on_delete=models.SET_DEFAULT,
+        default=Brand.default
+    )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, blank=True, null=True)
     images = ArrayField(models.CharField(max_length=200), default=list)
@@ -103,7 +107,7 @@ class Product(UUID):
         category = {
             "id": str(self.category_id),
             "name": str(self.category.name),
-            "sub_category": str(self.category.sub_category.name) if self.category.sub_category else None
+            "sub_category": str(self.category.sub_category.name) if self.category.sub_category else None # noqa
         }
         obj = ProductDocument(
             meta={"id": self.id},

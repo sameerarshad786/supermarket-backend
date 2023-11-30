@@ -6,7 +6,9 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
 from products.models import Product, Category
-from products.serializers import ProductSerializer, ProductDataSerializer, CategorySerializer
+from products.serializers import (
+    ProductSerializer, ProductDataSerializer, CategorySerializer
+)
 # from products.documents import ProductDocument
 from products.pagination import StandardResultsSetPagination
 from products.filters import CategoryFilter, ProductsFilter
@@ -38,13 +40,13 @@ class ProductsListAPIView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def list(self, request, *args, **kwargs):
-        search = self.request.GET.get("search")
-        condition = self.request.GET.get("condition")
-        brand = self.request.GET.get("brand")
-        by = self.request.GET.get("by")
-        price = self.request.GET.get("price")
-        page = int(self.request.GET.get("page", 1))
-        page_size = int(self.request.GET.get("page_size", 10))
+        # search = self.request.GET.get("search")
+        # condition = self.request.GET.get("condition")
+        # brand = self.request.GET.get("brand")
+        # by = self.request.GET.get("by")
+        # price = self.request.GET.get("price")
+        # page = int(self.request.GET.get("page", 1))
+        # page_size = int(self.request.GET.get("page_size", 10))
 
         # try:
         #     queryset = ProductDocument.search_product_using_es(
