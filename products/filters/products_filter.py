@@ -13,8 +13,11 @@ class CategoryFilter(filters.FilterSet):
 
 
 class ProductsFilter(filters.FilterSet):
-    search = filters.CharFilter(method='get_search')
+    search = filters.CharFilter(method="get_search")
     price = DecimalRangeFilter()
+    category = filters.CharFilter(
+        lookup_expr="icontains", field_name="category__sub_category__name"
+    )
 
     class Meta:
         model = Product
