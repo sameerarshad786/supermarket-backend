@@ -26,7 +26,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         cart_item = CartItem.objects.create(
             product_id=product_id, **validated_data)
         user.cart.cart_item.add(cart_item)
-        return validated_data
+        return cart_item
 
 
 class CartSerializer(serializers.ModelSerializer):
