@@ -13,7 +13,7 @@ class CategoryFilter(filters.FilterSet):
 
 
 class ProductsFilter(filters.FilterSet):
-    search = filters.CharFilter(method="get_search")
+    search = filters.CharFilter(lookup_expr="icontains", field_name="name")
     price = DecimalRangeFilter()
     category = filters.CharFilter(
         lookup_expr="icontains", field_name="category__sub_category__name"
@@ -22,9 +22,3 @@ class ProductsFilter(filters.FilterSet):
     class Meta:
         model = Product
         fields = ("search", "condition", "brand", "by", "price")
-
-    def get_search(self, queryset, name, value):
-        queryset = queryset.filter(
-            name__icontains=value
-        )
-        return queryset
