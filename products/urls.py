@@ -37,12 +37,12 @@ CART_URL_PATTERNS = [
         name="add-to-cart"
     ),
     path(
-        "update-cart-item/<uuid:product_id>",
+        "update-cart-item/<uuid:product_id>/",
         views.CartItemUpdateAPIView.as_view(),
         name="update-cart-item"
     ),
     path(
-        "remove-from-cart/<uuid:product_id>",
+        "remove-from-cart/<uuid:product_id>/",
         views.CartItemDeleteAPIView.as_view(),
         name="remove-from-cart"
     )
