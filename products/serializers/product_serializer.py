@@ -17,7 +17,11 @@ class CategorySerializer(serializers.ModelSerializer):
         return Category.objects.create(name=name)
 
     def get_sub_category(self, obj):
-        return obj.sub_category.name if obj.sub_category else None
+        try:
+            sub_category = obj.sub_category.name
+        except:
+            sub_category = obj.sub_category
+        return sub_category
 
 
 class BrandSerializer(serializers.ModelSerializer):

@@ -37,7 +37,7 @@ class ProductDocument(Document):
 
     @classmethod
     def search_product_using_es(
-        cls, search, condition, brand, by, price, page, page_size
+        cls, search, condition, category, brand, by, price, page, page_size
     ) -> list:
         client = elastic_search_client()
         es = Search(
@@ -50,8 +50,10 @@ class ProductDocument(Document):
             )
         if condition:
             should.append(Q("term", condition=condition))
+        if category:
+            should.append(Q("term", category__sub_category__name=category))
         if brand:
-            should.append(Q("term", brand=brand))
+            should.append(Q("term", brand__name=brand))
         if by:
             should.append(Q("term", by=by))
 
