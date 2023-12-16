@@ -90,7 +90,7 @@ class ProductsItem(scrapy.Item):
                     name=sub_category
                 )
             return sub_category
-        return sub_category
+        return category
 
     def get_condition(self, condition):
         for value in Product.Condition:
