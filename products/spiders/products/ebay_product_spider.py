@@ -2,12 +2,8 @@ import os
 import re
 import scrapy
 
-from urllib.request import urlopen
-from decimal import Decimal
-
 from scrapy.linkextractors import LinkExtractor
-from scrapy.http import Request, Response
-from lxml import html
+from scrapy.http import Request
 
 from products.items import ProductsItem
 from products.models import Product, Brand
@@ -89,7 +85,7 @@ class EbayProductsSpider(scrapy.Spider):
             item["ratings"] = ratings
             item["discount"] = item.calc_discount(price, original_price)
             item["condition"] = item.get_condition(condition)
-            item["category"] = await item.get_category(kwargs["category"], kwargs["sub_category"])
+            item["category"] = await item.get_category(kwargs["sub_category"], kwargs["category"])
             yield item
 
     def parse_name(self, product):
