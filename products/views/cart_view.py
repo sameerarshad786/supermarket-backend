@@ -3,6 +3,7 @@ from rest_framework.response import Response
 
 from products.models import CartItem
 from products.serializers import CartSerializer, CartItemSerializer
+from products.permissions import IsObjectPermission
 
 
 class CartAPIView(generics.GenericAPIView):
@@ -32,6 +33,7 @@ class CartItemUpdateAPIView(generics.UpdateAPIView):
     queryset = CartItem.objects.all()
     lookup_field = "product_id"
     allowed_methods = ["PATCH"]
+    permission_classes = (IsObjectPermission, )
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -43,3 +45,4 @@ class CartItemDeleteAPIView(generics.DestroyAPIView):
     serializer_class = CartItemSerializer
     queryset = CartItem.objects.all()
     lookup_field = "product_id"
+    permission_classes = (IsObjectPermission, )

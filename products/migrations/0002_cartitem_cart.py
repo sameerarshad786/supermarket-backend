@@ -23,6 +23,7 @@ class Migration(migrations.Migration):
                 ('is_active', models.BooleanField(default=True)),
                 ('is_deleted', models.BooleanField(default=False)),
                 ('quantity', models.PositiveIntegerField(default=1)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.product')),
             ],
             options={
