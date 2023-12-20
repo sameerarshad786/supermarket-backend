@@ -12,31 +12,38 @@ from products.models import Product
 
 class DarazProductSpider(scrapy.Spider):
     name = Product.By.DARAZ
-    start_urls = ["https://www.daraz.pk/"]
+    headers_file = open("products/headers/daraz.json")
+    headers = json.loads(headers_file.read())
 
-    custom_settings = {
-        "ITEM_PIPELINES": {
-            "products.pipelines.ProductsPipeline": 100
-        }
-    }
+
+    def start_requests(self):
+        yield Request(
+            url="https://www.daraz.pk/",
+            headers=self.headers,
+            callback=self.parse
+        )
 
     def parse(self, response, **kwargs):
         for data in response.xpath("//li[@class='lzd-site-menu-sub-item']"):
-            if data.xpath('./a/span/text()').get() in [os.getenv("DARAZ_CATEGORIES")]:
+            if data.xpath('./a/span/text()').get() in [os.getenv("DARAZ_SUB_CATEGORIES")]:
                 url = f"https:{data.xpath('./a/@href').get()}"
+                self.headers["Referer"] = response.request.url
                 yield Request(
                     url=url,
+                    headers=self.headers,
                     callback=self.crawl_pages
                 )
 
     def crawl_pages(self, response, **kwargs):
-        start = int(os.getenv("DARAZ_START", 1))
+        start = int(os.getenv("DARAZ_START", 2))
         end = int(os.getenv("DARAZ_END", 10))
 
-        for page in range(start, end + 1, 1):
+        for page in range(start, end + 1):
             url = f"{response.request.url}?page={page}"
+            self.headers["Referer"] = response.request.url
             yield Request(
                 url=url,
+                headers=self.headers,
                 callback=self.parse_product_brands
             )
 
@@ -77,7 +84,7 @@ class DarazProductSpider(scrapy.Spider):
             item["ratings"] = ratings
             item["discount"] = discount
             item["condition"] = Product.Condition.NOT_DEFINED
-            item["category"] = await item.get_category(os.getenv("DARAZ_CATEGORIES"))
+            item["category"] = await item.get_category(os.getenv("DARAZ_SUB_CATEGORIES"))
             yield item
 
     def parse_original_price(self, product, price):
