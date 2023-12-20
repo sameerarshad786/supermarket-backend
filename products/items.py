@@ -81,7 +81,6 @@ class ProductsItem(scrapy.Item):
         if sub_category:
             try:
                 sub_category = await Category.objects.aget(
-                    sub_category=category,
                     name__icontains=sub_category
                 )
             except Category.DoesNotExist:

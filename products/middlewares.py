@@ -57,8 +57,8 @@ class ProductsSpiderMiddleware:
         for r in start_requests:
             if spider.name == Product.By.EBAY:
                 r.headers["Referer"] = settings.get("EBAY_REFERER")
-            elif spider.name == Product.By.DARAZ:
-                r.headers["Referer"] = settings.get("DARAZ_REFERER")
+            # elif spider.name == Product.By.DARAZ:
+            #     r.headers["Referer"] = settings.get("DARAZ_REFERER")
             elif spider.name == Product.By.AMAZON:
                 r.headers["Referer"] = settings.get("AMAZON_REFERER")
             yield r
