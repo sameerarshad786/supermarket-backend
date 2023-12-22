@@ -33,7 +33,7 @@ class BrandSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     price = DecimalRangeFieldSerializer()
     on_cart = serializers.SerializerMethodField()
-    by = serializers.CharField(default=Product.By.NOT_DEFINED)
+    by = serializers.CharField(default=Product.By.SUPERMARKET)
     brand = BrandSerializer()
     category = CategorySerializer(required=False)
 
