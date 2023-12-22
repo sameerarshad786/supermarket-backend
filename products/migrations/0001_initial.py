@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                 ('original_price', models.DecimalField(decimal_places=2, default=0, max_digits=7)),
                 ('price', django.contrib.postgres.fields.ranges.DecimalRangeField(default=(Decimal('0.00'), Decimal('0.00')))),
                 ('shipping_charges', models.DecimalField(decimal_places=2, default=0, max_digits=5)),
-                ('by', models.CharField(choices=[('not defined', 'Not Defined'), ('amazon', 'Amazon'), ('ebay', 'Ebay'), ('daraz', 'Daraz'), ('ali express', 'Ali Express'), ('ali baba', 'Ali Baba'), ('olx', 'olx')], max_length=11)),
+                ('by', models.CharField(choices=[('supermarket', 'Supermarket'), ('wisemarket', 'Wisemarket'), ('amazon', 'Amazon'), ('ebay', 'Ebay'), ('daraz', 'Daraz'), ('ali express', 'Ali Express'), ('ali baba', 'Ali Baba'), ('olx', 'olx')], max_length=11)),
                 ('source', models.CharField(choices=[('scraped', 'Scraped'), ('current', 'Current')], default='scraped')),
                 ('discount', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(-100), django.core.validators.MaxValueValidator(0)])),
                 ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='products.category')),

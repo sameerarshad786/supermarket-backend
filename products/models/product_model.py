@@ -44,7 +44,8 @@ class Product(UUID):
         DEAD = "dead", _("Dead")
 
     class By(models.TextChoices):
-        NOT_DEFINED = "not defined", _("Not Defined")
+        SUPERMARKET = "supermarket", _("Supermarket")
+        WISEMARKET = "wisemarket", _("Wisemarket")
         AMAZON = "amazon", _("Amazon")
         EBAY = "ebay", _("Ebay")
         DARAZ = "daraz", _("Daraz")
