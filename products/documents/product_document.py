@@ -51,7 +51,7 @@ class ProductDocument(Document):
         if condition:
             should.append(Q("term", condition=condition))
         if category:
-            should.append(Q("term", category__sub_category__name=category))
+            should.append(Q("match", category__sub_category=category))
         if brand:
             should.append(Q("term", brand__name=brand))
         if by:

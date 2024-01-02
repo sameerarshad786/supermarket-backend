@@ -93,6 +93,6 @@ class ProductsItem(scrapy.Item):
 
     def get_condition(self, condition):
         for value in Product.Condition:
-            if value._value_ in condition.lower():
+            if condition and value._value_ in condition.lower():
                 return value._value_
         return Product.Condition.NOT_DEFINED
