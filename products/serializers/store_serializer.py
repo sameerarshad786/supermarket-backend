@@ -7,6 +7,7 @@ from products.serializers import CategorySerializer, ProductSerializer
 
 
 class StoreSerializer(serializers.ModelSerializer):
+    total_products = serializers.SerializerMethodField()
     product = ProductSerializer(many=True)
 
     class Meta:
@@ -18,6 +19,7 @@ class StoreSerializer(serializers.ModelSerializer):
             "url",
             "main_photo",
             "cover_photo",
+            "total_products",
             "product"
         )
         extra_kwargs = {
@@ -38,6 +40,9 @@ class StoreSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context["request"].user
         return Store.objects.create(user=user, **validated_data)
+
+    def get_total_products(self, obj):
+        return obj.product.count()
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
