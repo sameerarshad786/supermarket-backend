@@ -13,15 +13,20 @@ class SearchStoreAPIView(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ["id", "name"]
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["show_products"] = True
-        return context
-
 
 class StoreCreateAPIView(generics.CreateAPIView):
     serializer_class = StoreSerializer
     queryset = Store.objects.all()
+
+
+class StoreRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = StoreSerializer
+    queryset = Store.objects.all()
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["show_products"] = True
+        return context
 
 
 class StoreUpdateAPIView(generics.UpdateAPIView):
