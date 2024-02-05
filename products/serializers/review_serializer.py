@@ -8,7 +8,7 @@ from users.serializers import UserSerializer
 
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    source = serializers.CharField(default=Review.Source.CURRENT)
+    picture = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
@@ -17,7 +17,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             "name",
             "rating",
             "review",
-            "source",
+            "picture",
             "user",
             "images"
         )
@@ -54,15 +54,18 @@ class ReviewSerializer(serializers.ModelSerializer):
             **validated_data
         )
 
-    def to_representation(self, instance: Review):
-        representation = super().to_representation(instance)
-        images = []
-        if (
-            instance.source == Review.Source.CURRENT and
-            settings.DEBUG
-        ):
-            images = list(
-                map(lambda x: f"{settings.FRONTEND_URL}{x}", instance.images)
-            )
-            representation["images"] = images
-        return representation
+    def get_picture(self, obj):
+        if obj.user:
+            return obj.user.profile.image
+        else:
+            return F"{settings.FRONTEND_URL}media/profile/default/male.png"
+
+    # def to_representation(self, instance: Review):
+    #     representation = super().to_representation(instance)
+    #     images = []
+    #     if settings.DEBUG:
+    #         images = list(
+    #             map(lambda x: f"{settings.FRONTEND_URL}{x}", instance.images)
+    #         )
+    #         representation["images"] = images
+    #     return representation

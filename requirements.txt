@@ -9,6 +9,5 @@ elasticsearch_dsl==8.9.0
 psycopg2==2.9.9
 python_dotenv==1.0.0
 drf-yasg==1.21.7
-playwright==1.39.0
-scrapy_playwright==0.0.33
 aiohttp==3.8.6
+django-cors-headers==4.3.1

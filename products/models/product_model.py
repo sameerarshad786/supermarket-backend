@@ -53,9 +53,6 @@ class Product(UUID):
         ALI_BABA = "ali baba", _("Ali Baba")
         OLX = "olx", _("olx")
 
-    class Source(models.TextChoices):
-        SCRAPED = ("scraped", _("Scraped"))
-        CURRENT = ("current", _("Current"))
 
     name = models.CharField(max_length=500)
     description = models.TextField()
@@ -81,7 +78,6 @@ class Product(UUID):
     shipping_charges = models.DecimalField(
         default=0, max_digits=5, decimal_places=2)
     by = models.CharField(max_length=11, choices=By.choices)
-    source = models.CharField(choices=Source.choices, default=Source.SCRAPED)
     discount = models.IntegerField(
         validators=[MinValueValidator(-100), MaxValueValidator(0)], default=0)
     available = models.BooleanField(default=True)

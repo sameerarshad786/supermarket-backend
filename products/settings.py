@@ -10,11 +10,6 @@
 import os
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supermarket.settings')
-import django
-django.setup()
-
-
 BOT_NAME = "products"
 
 SPIDER_MODULES = ["products.spiders"]
@@ -41,19 +36,14 @@ DOWNLOAD_DELAY = 2
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = True
 
-DOWNLOAD_HANDLERS = {
-    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-}
-
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-# DEFAULT_REQUEST_HEADERS = {
-#    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-#    "Accept-Language": "en"
-# }
+DEFAULT_REQUEST_HEADERS = {
+   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+   "Accept-Language": "en"
+}
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
@@ -104,11 +94,6 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.6"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
-
-PLAYWRIGHT_LAUNCH_OPTIONS = {
-    "headless": False
-}
-PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 100000
 
 EBAY_REFERER = os.getenv("EBAY_REFERER")
 DARAZ_REFERER = os.getenv("DARAZ_REFERER")

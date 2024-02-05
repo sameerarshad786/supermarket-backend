@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
                 ('is_deleted', models.BooleanField(default=False)),
                 ('name', models.CharField(max_length=50)),
                 ('review', models.TextField()),
-                ('source', models.CharField(choices=[('scraped', 'Scraped'), ('current', 'Current')], default='scraped')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.product')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
                 ('images', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=200), default=list)),

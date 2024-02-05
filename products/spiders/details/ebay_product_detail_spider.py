@@ -43,7 +43,7 @@ class EbayProductDetailSpider:
                 ]
                 await asyncio.gather(*tasks)
 
-    async def update_product(self, data, instance):
+    async def update_product(self, data, instance: Product):
         details = data["JSONLD"]
         pictures = data["PICTURE"]["mediaList"]
         images = list(map(lambda x: x["image"]["originalImg"]["URL"], pictures))
@@ -51,7 +51,11 @@ class EbayProductDetailSpider:
         product = dict()
         from products.service import union
         product["images"] = union(instance.images, images)
-        product["brand"] = await ProductsItem.get_brand(ProductsItem, details["product"]["brand"]["name"])
+        try:
+            brand = details["product"]["brand"]["name"]
+            product["brand"] = await ProductsItem.get_brand(ProductsItem, brand)
+        except KeyError:
+            pass
         product["url"] = instance.url
         product["price"] = ProductsItem.get_price(ProductsItem, price)
         try:
