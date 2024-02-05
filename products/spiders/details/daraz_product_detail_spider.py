@@ -74,7 +74,6 @@ class DarazProductDetailSpider:
         for value in reviews:
             review = dict()
             review["name"] = value["reviewer"]
-            review["source"] = Review.Source.SCRAPED
             review["review"] = value.get("reviewContent", "")
             review["rating"] = Decimal(value["rating"])
             if value.get("images"):

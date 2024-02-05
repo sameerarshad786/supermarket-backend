@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import Product, Category, Brand, Cart, CartItem, Review, Store
+
+from . import models
 
 
-@admin.register(Product)
+@admin.register(models.Product)
 class ProductsAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -19,7 +20,7 @@ class ProductsAdmin(admin.ModelAdmin):
         return obj.brand.name
 
 
-@admin.register(Category)
+@admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -28,7 +29,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Brand)
+@admin.register(models.Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -38,21 +39,21 @@ class BrandAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Cart)
+@admin.register(models.Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ("id", "user")
 
 
-@admin.register(CartItem)
+@admin.register(models.CartItem)
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ("id", "product", "quantity")
 
 
-@admin.register(Review)
+@admin.register(models.Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ("id", "product_id", "rating")
 
 
-@admin.register(Store)
+@admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "user", "created", "updated")

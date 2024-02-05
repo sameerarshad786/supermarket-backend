@@ -90,8 +90,6 @@ class ProductDataSerializer(serializers.ModelSerializer):
         fields = super().get_fields()
         if request.method == "POST":
             fields.update({
-                "source": serializers.CharField(
-                    default=Product.Source.CURRENT),
                 "store": serializers.UUIDField(),
                 "images": serializers.ListField(
                     child=serializers.FileField(required=False),
