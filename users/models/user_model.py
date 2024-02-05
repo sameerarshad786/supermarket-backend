@@ -23,6 +23,18 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None):
         user = self.create_user(email, password)
+        full_name = input("Enter full name:").title()
+        gender = input("Enter gender (male/female): ").lower()
+        while gender not in ['male', 'female']:
+            print("Invalid gender. Please enter 'male', 'female'")
+            gender = input("Enter gender (male/female): ").lower()
+
+        profile = {
+            "full_name": full_name,
+            "gender": gender
+        }
+        from users.signals import profile_values
+        profile_values.send(sender=User, user=user, profile=profile)
         user.is_staff = True
         user.is_superuser = True
         user.save()
