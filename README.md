@@ -4,7 +4,7 @@ This Django project is designed to scrape products from various sources, store t
 
 ## Features
 
-- Scrapes products from multiple sources
+- Scrapes products from multiple sources, like Amazon, daraz, ebay
 - Stores product data in a PostgreSQL database
 - Provides endpoints for retrieving product information
-- Supports updating product data by reloading or through API requests
+- Supports updating product data through API requests
