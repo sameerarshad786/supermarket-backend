@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 
 from . import models
 
@@ -57,3 +58,21 @@ class ReviewAdmin(admin.ModelAdmin):
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "user", "created", "updated")
+
+
+class MyCustomInlineForm(forms.ModelForm):
+    name = forms.CharField(label='First Param', required=False)
+    description = forms.CharField(label='Second Param', required=False)
+
+
+class RulesAdmin(admin.StackedInline):
+    model = models.Rules
+    extra = 1
+    form = MyCustomInlineForm
+
+
+class ProductScraperAdmin(admin.ModelAdmin):
+    inlines = [RulesAdmin]
+
+
+admin.site.register(models.ProductScraper, ProductScraperAdmin)
