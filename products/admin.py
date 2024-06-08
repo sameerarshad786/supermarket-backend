@@ -54,6 +54,11 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ("id", "product_id", "rating")
 
 
+@admin.register(models.ProductQuestion)
+class ProductQuestionAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "product_id")
+
+
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "user", "created", "updated")

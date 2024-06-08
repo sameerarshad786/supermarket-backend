@@ -92,8 +92,8 @@ class EbayProductDetailSpider:
         store = dict()
         try:
             store["name"] = data["title"]["action"]["params"]["store_name"]
-        except KeyError:
-            store["name"] = data["title"]["action"]["params"]["username"]
+        except:
+            store["name"] = data["title"]["action"]["params"]["_ssn"]
         store["by"] = Product.By.EBAY
         store["url"] = data["title"]["action"]["URL"]
         if not "H9YAAOSwrR1g05VS" in data["sections"][0]["logo"]["URL"]:

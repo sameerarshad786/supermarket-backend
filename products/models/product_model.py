@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import DecimalRangeField
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from elasticsearch.exceptions import ConnectionError
+
 from utils.mixins import UUID
 
 
@@ -89,41 +91,44 @@ class Product(UUID):
 
     def indexing(self):
         from products.documents.product_document import ProductDocument
-        if self.price.upper:
+        try:
+            if self.price.upper:
+                price = {
+                    "gt": float(self.price.lower),
+                    "lt": float(self.price.upper)
+                }
             price = {
-                "gt": float(self.price.lower),
-                "lt": float(self.price.upper)
+                "gt": float(self.price.lower)
             }
-        price = {
-            "gt": float(self.price.lower)
-        }
-        brand = {
-            "id": str(self.brand.id),
-            "name": str(self.brand.name)
-        }
-        category = {
-            "id": str(self.category_id),
-            "name": str(self.category.name),
-            "sub_category": str(self.category.sub_category.name) if self.category.sub_category else None # noqa
-        }
-        obj = ProductDocument(
-            meta={"id": self.id},
-            id=self.id,
-            name=self.name,
-            images=self.images,
-            price=price,
-            brand=brand,
-            category=category,
-            condition=self.condition,
-            ratings=self.ratings,
-            discount=self.discount,
-            by=self.by,
-            url=self.url,
-            created_at=self.created_at.date(),
-            updated_at=self.updated_at.date()
-        )
-        obj.save(index='products')
-        return obj.to_dict(include_meta=True)
+            brand = {
+                "id": str(self.brand.id),
+                "name": str(self.brand.name)
+            }
+            category = {
+                "id": str(self.category_id),
+                "name": str(self.category.name),
+                "sub_category": str(self.category.sub_category.name) if self.category.sub_category else None # noqa
+            }
+            obj = ProductDocument(
+                meta={"id": self.id},
+                id=self.id,
+                name=self.name,
+                images=self.images,
+                price=price,
+                brand=brand,
+                category=category,
+                condition=self.condition,
+                ratings=self.ratings,
+                discount=self.discount,
+                by=self.by,
+                url=self.url,
+                created_at=self.created_at.date(),
+                updated_at=self.updated_at.date()
+            )
+            obj.save(index='products')
+            return obj.to_dict(include_meta=True)
+        except ConnectionError:
+            return self
 
     def delete_product_from_elasticsearch_db(self):
         from products.documents.product_document import ProductDocument

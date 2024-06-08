@@ -8,7 +8,7 @@
 
 import colorama
 
-from products.models import Product, Store, Review
+from products.models import Product, Store, Review, ProductQuestion
 
 
 class ProductsPipeline:
@@ -60,3 +60,19 @@ class StoresPipeline:
 
             await store_instance.asave()
             await store_instance.product.aadd(product.id)
+
+
+class QuestionAndAnswerPipeline:
+    async def process_item(qna_list, product):
+        if qna_list:
+            for qna in qna_list:
+                try:
+                    qna_instance = await ProductQuestion.objects.aget(product=product)
+                    for x, y in qna.items():
+                        setattr(qna_instance, x, y)
+                    print(qna, colorama.Fore.YELLOW)
+                except ProductQuestion.DoesNotExist:
+                    qna_instance = ProductQuestion(**qna, product=product)
+                    print(qna, colorama.Fore.GREEN)
+
+                await qna_instance.asave()

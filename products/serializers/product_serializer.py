@@ -3,6 +3,7 @@ from rest_framework import serializers
 from products.models import Category, Brand, Product, Store
 from .serializer_fields import DecimalRangeFieldSerializer
 from .review_serializer import ReviewSerializer
+from .product_question_serializer import ProductQuestionSerializer
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -77,6 +78,7 @@ class ProductDataSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField()
     store = serializers.SerializerMethodField()
     brand = BrandSerializer()
+    question_answer = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -101,7 +103,7 @@ class ProductDataSerializer(serializers.ModelSerializer):
     def get_reviews(self, obj):
         return ReviewSerializer(
             obj.review_set.all(),
-            context={**self.context},
+            context=self.context,
             many=True
         ).data
 
@@ -110,6 +112,13 @@ class ProductDataSerializer(serializers.ModelSerializer):
             from products.serializers import StoreSerializer
             return StoreSerializer(
                 obj.store_set.get(),
-                context={**self.context},
+                context=self.context,
             ).data
         return {}
+
+    def get_question_answer(self, obj):
+        return ProductQuestionSerializer(
+            obj.productquestion_set.all(),
+            many=True,
+            context=self.context
+        ).data
