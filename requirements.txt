@@ -6,8 +6,12 @@ djangorestframework-simplejwt==5.3.0
 django-filter==23.3.0
 Scrapy==2.11.0
 elasticsearch_dsl==8.9.0
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
 python_dotenv==1.0.0
 drf-yasg==1.21.7
 aiohttp==3.8.6
 django-cors-headers==4.3.1
+daphne==4.0.0
+channels==4.0.0
+channels_redis==4.2.0
+dialogflow==1.1.1
