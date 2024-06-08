@@ -13,13 +13,12 @@ from products.models import Product
 class DarazProductSpider(scrapy.Spider):
     name = Product.By.DARAZ
     headers_file = open("products/headers/daraz.json")
-    headers = json.loads(headers_file.read())
+    # headers = json.loads(headers_file.read())
 
 
     def start_requests(self):
         yield Request(
             url="https://www.daraz.pk/",
-            headers=self.headers,
             callback=self.parse
         )
 
@@ -27,10 +26,8 @@ class DarazProductSpider(scrapy.Spider):
         for data in response.xpath("//li[@class='lzd-site-menu-sub-item']"):
             if data.xpath('./a/span/text()').get() in [os.getenv("DARAZ_SUB_CATEGORIES")]:
                 url = f"https:{data.xpath('./a/@href').get()}"
-                self.headers["Referer"] = response.request.url
                 yield Request(
                     url=url,
-                    headers=self.headers,
                     callback=self.crawl_pages
                 )
 
@@ -40,10 +37,8 @@ class DarazProductSpider(scrapy.Spider):
 
         for page in range(start, end + 1):
             url = f"{response.request.url}?page={page}"
-            self.headers["Referer"] = response.request.url
             yield Request(
                 url=url,
-                headers=self.headers,
                 callback=self.parse_product_brands
             )
 

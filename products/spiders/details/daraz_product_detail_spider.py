@@ -7,8 +7,13 @@ from decimal import Decimal
 
 from lxml import html
 
-from products.models import Review, Store
-from products.pipelines import ProductsPipeline, ReviewsPipeline, StoresPipeline
+from products.models import Store
+from products.pipelines import (
+    ProductsPipeline,
+    ReviewsPipeline,
+    StoresPipeline,
+    QuestionAndAnswerPipeline
+)
 
 
 class DarazProductDetailSpider:
@@ -37,7 +42,8 @@ class DarazProductDetailSpider:
                 tasks = [
                     self.update_product(data, instance),
                     self.insert_or_update_reviews(data, instance),
-                    self.insert_or_update_store(data, instance)
+                    self.insert_or_update_store(data, instance),
+                    self.insert_or_update_qna(data, instance)
                 ]
                 await asyncio.gather(*tasks)
 
@@ -46,13 +52,22 @@ class DarazProductDetailSpider:
         images = list(map(lambda x: x["image"], product_options))
         product = {}
         _product = data["product"]
-        html_desc = _product["desc"].replace("\"", "'")
+        html_desc = ""
+        if _product.get("desc"):
+            html_desc = _product["desc"].replace("\"", "'")
+            tree = html.fromstring(html_desc)
+            link_elements = tree.xpath("//a")
+            for link in link_elements:
+                link.attrib["target"] = "_blank"
+            html_desc = html.tostring(tree).decode("UTF-8")
+
         ratings = data["review"]["ratings"]["average"]
         product["ratings"] = Decimal(ratings)
         product["html"] = html_desc
         from products.service import union
         product["images"] = union(instance.images, images)
-        product["description"] = _product["highlights"]
+        if _product.get("highlights"):
+            product["description"] = _product["highlights"]
         product["url"] = instance.url
 
         try:
@@ -94,3 +109,16 @@ class DarazProductDetailSpider:
         store["category_id"] = instance.category_id
 
         await StoresPipeline.process_item(store, instance)
+
+    async def insert_or_update_qna(self, data, product):
+        qna = data["qna"]
+        qna_list = []
+        if qna.get("items"):
+            for item in qna["items"]:
+                _qna = dict()
+                _qna["question"] = item["question"]
+                _qna["answer"] = item["answer"]
+                _qna["name"] = item["customerName"]
+                qna_list.append(_qna)
+            await QuestionAndAnswerPipeline.process_item(qna_list, product)
+        return None
