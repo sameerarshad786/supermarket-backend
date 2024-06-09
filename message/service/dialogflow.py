@@ -12,7 +12,7 @@ from message.models import BotMessage
 
 
 def send_and_recieve_message_from_bot(request):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials/google.json"
     session_client = dialogflow.SessionsClient()
     language_code = "en-US"
     session_id = uuid.uuid4()
