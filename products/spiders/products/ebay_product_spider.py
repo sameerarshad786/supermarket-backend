@@ -6,11 +6,12 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.http import Request
 
 from products.items import ProductsItem
-from products.models import Product, Brand
+from products.models import Brand
+from products.constants import By
 
 
 class EbayProductsSpider(scrapy.Spider):
-    name = Product.By.EBAY
+    name = By.EBAY
     start_urls = ["https://www.ebay.com/"]
 
     def parse(self, response, **kwargs):
@@ -27,8 +28,9 @@ class EbayProductsSpider(scrapy.Spider):
     def crawl_subcategories(self, response, **kwargs):
         sub_categories = [os.getenv("EBAY_SUBCATEGORY")]
         for sub_category in sub_categories:
-            url = response.xpath(f"//a[contains(div/text(), '{sub_category}')]/@href").get()
-            kwargs["sub_category"] = sub_category
+            # url = response.xpath(f"//a[contains(div/text(), '{sub_category}')]/@href").get()
+            url = "https://www.ebay.com/b/Cell-Phones-Smart-Watches-Accessories/15032/bn_1865441"
+            kwargs["sub_category"] = "Smart Phones"
             yield Request(
                 url=url,
                 callback=self.crawl_sections,
@@ -77,7 +79,7 @@ class EbayProductsSpider(scrapy.Spider):
             item["brand"] = kwargs["brand"]
             item["url"] = url
             item["price"] = item.get_price(price)
-            item["by"] = Product.By.EBAY
+            item["by"] = By.EBAY
             item["images"] = image
             item["original_price"] = original_price
             item["items_sold"] = items_sold

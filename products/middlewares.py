@@ -10,7 +10,7 @@ from scrapy import signals
 
 from scrapy.utils.project import get_project_settings
 
-from products.models import Product
+from products.constants import By
 
 
 class ProductsSpiderMiddleware:
@@ -55,11 +55,11 @@ class ProductsSpiderMiddleware:
 
         # Must return only requests (not items).
         for r in start_requests:
-            if spider.name == Product.By.EBAY:
+            if spider.name == By.EBAY:
                 r.headers["Referer"] = settings.get("EBAY_REFERER")
-            # elif spider.name == Product.By.DARAZ:
-            #     r.headers["Referer"] = settings.get("DARAZ_REFERER")
-            elif spider.name == Product.By.AMAZON:
+            elif spider.name == By.DARAZ:
+                r.headers["Referer"] = settings.get("DARAZ_REFERER")
+            elif spider.name == By.AMAZON:
                 r.headers["Referer"] = settings.get("AMAZON_REFERER")
             yield r
 

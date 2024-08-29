@@ -10,7 +10,8 @@ from decimal import Decimal
 
 from psycopg2.extras import NumericRange
 
-from products.models import Category, Brand, Product
+from products.models import Category, Brand
+from products.constants import Condition
 
 
 class ProductsItem(scrapy.Item):
@@ -92,7 +93,7 @@ class ProductsItem(scrapy.Item):
         return category
 
     def get_condition(self, condition):
-        for value in Product.Condition:
+        for value in Condition:
             if condition and value._value_ in condition.lower():
                 return value._value_
-        return Product.Condition.NOT_DEFINED
+        return Condition.NOT_DEFINED

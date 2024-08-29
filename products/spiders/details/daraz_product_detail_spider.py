@@ -7,7 +7,7 @@ from decimal import Decimal
 
 from lxml import html
 
-from products.models import Store
+from products.constants import By
 from products.pipelines import (
     ProductsPipeline,
     ReviewsPipeline,
@@ -101,7 +101,7 @@ class DarazProductDetailSpider:
     async def insert_or_update_store(self, data, instance):
         store = dict()
         store["name"] = data["seller"]["name"]
-        store["by"] = Store.By.DARAZ
+        store["by"] = By.DARAZ
         try:
             store["url"] = "https:{}".format(data["seller"]["url"])
         except KeyError:

@@ -53,7 +53,7 @@ STORE_URL_PATTERNS = [
     path("search/", views.SearchStoreAPIView.as_view(), name="search-store"),
     path("create/", views.StoreCreateAPIView.as_view(), name="create-store"),
     path(
-        "<uuid:pk>/", views.StoreRetrieveAPIView.as_view(), name="create-store"
+        "<uuid:pk>/", views.StoreRetrieveAPIView.as_view(), name="retrieve-store"
     ),
     path(
         "update/<uuid:pk>/",

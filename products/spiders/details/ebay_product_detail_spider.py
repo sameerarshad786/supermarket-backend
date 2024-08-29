@@ -7,6 +7,7 @@ from decimal import Decimal
 
 from lxml import html
 
+from products.constants import By
 from products.models import Product
 from products.pipelines import ProductsPipeline, ReviewsPipeline, StoresPipeline
 from products.items import ProductsItem
@@ -94,7 +95,7 @@ class EbayProductDetailSpider:
             store["name"] = data["title"]["action"]["params"]["store_name"]
         except:
             store["name"] = data["title"]["action"]["params"]["_ssn"]
-        store["by"] = Product.By.EBAY
+        store["by"] = By.EBAY
         store["url"] = data["title"]["action"]["URL"]
         if not "H9YAAOSwrR1g05VS" in data["sections"][0]["logo"]["URL"]:
             store["main_photo"] = data["sections"][0]["logo"]["URL"]

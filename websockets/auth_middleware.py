@@ -31,4 +31,5 @@ class TokenAuthMiddleWare:
         token = query_params["token"][0]
         user = await return_user(token)
         scope["user"] = user
+        scope["query_params"] = query_params
         return await self.app(scope, receive, send)

@@ -4,6 +4,7 @@ from products.models import Category, Brand, Product, Store
 from .serializer_fields import DecimalRangeFieldSerializer
 from .review_serializer import ReviewSerializer
 from .product_question_serializer import ProductQuestionSerializer
+from products.constants import By
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -34,7 +35,7 @@ class BrandSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     price = DecimalRangeFieldSerializer()
     on_cart = serializers.SerializerMethodField()
-    by = serializers.CharField(default=Product.By.SUPERMARKET)
+    by = serializers.CharField(default=By.SUPERMARKET)
     brand = BrandSerializer()
     category = CategorySerializer(required=False)
 

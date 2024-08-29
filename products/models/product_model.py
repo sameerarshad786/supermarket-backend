@@ -2,13 +2,13 @@ from decimal import Decimal
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import DecimalRangeField
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from elasticsearch.exceptions import ConnectionError
 
 from utils.mixins import UUID
+from products.constants import Condition, By
 
 
 def scraped_products_media_path(instance, filename):
@@ -37,25 +37,6 @@ class Brand(UUID):
 
 
 class Product(UUID):
-    class Condition(models.TextChoices):
-        NOT_DEFINED = "not defined", _("Not Defined")
-        NEW = "new", _("New")
-        USED = "used", _("Used")
-        OPEN_BOX = "open box", _("Open Box")
-        REFURBISHED = "refurbished", _("Refurbished")
-        DEAD = "dead", _("Dead")
-
-    class By(models.TextChoices):
-        SUPERMARKET = "supermarket", _("Supermarket")
-        WISEMARKET = "wisemarket", _("Wisemarket")
-        AMAZON = "amazon", _("Amazon")
-        EBAY = "ebay", _("Ebay")
-        DARAZ = "daraz", _("Daraz")
-        ALI_EXPRESS = "ali express", _("Ali Express")
-        ALI_BABA = "ali baba", _("Ali Baba")
-        OLX = "olx", _("olx")
-
-
     name = models.CharField(max_length=500)
     description = models.TextField()
     brand = models.ForeignKey(

@@ -7,11 +7,11 @@ from decimal import Decimal
 from scrapy.http import Request
 
 from products.items import ProductsItem
-from products.models import Product
+from products.constants import Condition, By
 
 
 class DarazProductSpider(scrapy.Spider):
-    name = Product.By.DARAZ
+    name = By.DARAZ
     headers_file = open("products/headers/daraz.json")
     # headers = json.loads(headers_file.read())
 
@@ -71,14 +71,14 @@ class DarazProductSpider(scrapy.Spider):
             item["brand"] = await item.get_brand(brand)
             item["url"] = url
             item["price"] = item.get_price(price)
-            item["by"] = Product.By.DARAZ
+            item["by"] = By.DARAZ
             item["images"] = [image]
             item["original_price"] = original_price
             item["items_sold"] = items_sold
             item["shipping_charges"] = shipping
             item["ratings"] = ratings
             item["discount"] = discount
-            item["condition"] = Product.Condition.NOT_DEFINED
+            item["condition"] = Condition.NOT_DEFINED
             item["category"] = await item.get_category(os.getenv("DARAZ_SUB_CATEGORIES"))
             yield item
 
